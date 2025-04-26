@@ -12,9 +12,9 @@
 # - Funciona silenciosamente en segundo plano
 
 # Variables de configuración
-BACKEND_URL="http://localhost:8000/api"
+BACKEND_URL="http://34.175.247.105:4002/api"
 VERIFICATION_ENDPOINT="$BACKEND_URL/validate_software"
-API_KEY="FFAd21L8X2fCdihh3DJdlHX8JaFdf9wdEAe2r50Nsa1iJcnCkFqOvnVQxUE5"  # Debe coincidir con el valor en la base de datos
+API_KEY="d8bae5d252a00496a84ab9c73c766ff4"  # Debe coincidir con el valor en la base de datos
 APPS_DIRECTORY="/Applications"
 SCAN_INTERVAL=10  # segundos entre escaneos
 QUARANTINE_DIR="$HOME/Library/Application Support/AppQuarantine"

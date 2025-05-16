@@ -1,0 +1,546 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		ECC728C72DCF7B51009197A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ECC728B02DCF7B50009197A8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ECC728B72DCF7B50009197A8;
+			remoteInfo = SoftCheckAgent;
+		};
+		ECC728D12DCF7B51009197A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ECC728B02DCF7B50009197A8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ECC728B72DCF7B50009197A8;
+			remoteInfo = SoftCheckAgent;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		ECC728B82DCF7B50009197A8 /* SoftCheckAgent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoftCheckAgent.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECC728C62DCF7B51009197A8 /* SoftCheckAgentTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoftCheckAgentTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECC728D02DCF7B51009197A8 /* SoftCheckAgentUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoftCheckAgentUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		ECC728BA2DCF7B50009197A8 /* SoftCheckAgent */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SoftCheckAgent;
+			sourceTree = "<group>";
+		};
+		ECC728C92DCF7B51009197A8 /* SoftCheckAgentTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SoftCheckAgentTests;
+			sourceTree = "<group>";
+		};
+		ECC728D32DCF7B51009197A8 /* SoftCheckAgentUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SoftCheckAgentUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		ECC728B52DCF7B50009197A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECC728C32DCF7B51009197A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECC728CD2DCF7B51009197A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		ECC728AF2DCF7B50009197A8 = {
+			isa = PBXGroup;
+			children = (
+				ECC728BA2DCF7B50009197A8 /* SoftCheckAgent */,
+				ECC728C92DCF7B51009197A8 /* SoftCheckAgentTests */,
+				ECC728D32DCF7B51009197A8 /* SoftCheckAgentUITests */,
+				ECC728B92DCF7B50009197A8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		ECC728B92DCF7B50009197A8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ECC728B82DCF7B50009197A8 /* SoftCheckAgent.app */,
+				ECC728C62DCF7B51009197A8 /* SoftCheckAgentTests.xctest */,
+				ECC728D02DCF7B51009197A8 /* SoftCheckAgentUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		ECC728B72DCF7B50009197A8 /* SoftCheckAgent */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ECC728DA2DCF7B51009197A8 /* Build configuration list for PBXNativeTarget "SoftCheckAgent" */;
+			buildPhases = (
+				ECC728B42DCF7B50009197A8 /* Sources */,
+				ECC728B52DCF7B50009197A8 /* Frameworks */,
+				ECC728B62DCF7B50009197A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				ECC728BA2DCF7B50009197A8 /* SoftCheckAgent */,
+			);
+			name = SoftCheckAgent;
+			packageProductDependencies = (
+			);
+			productName = SoftCheckAgent;
+			productReference = ECC728B82DCF7B50009197A8 /* SoftCheckAgent.app */;
+			productType = "com.apple.product-type.application";
+		};
+		ECC728C52DCF7B51009197A8 /* SoftCheckAgentTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ECC728DD2DCF7B51009197A8 /* Build configuration list for PBXNativeTarget "SoftCheckAgentTests" */;
+			buildPhases = (
+				ECC728C22DCF7B51009197A8 /* Sources */,
+				ECC728C32DCF7B51009197A8 /* Frameworks */,
+				ECC728C42DCF7B51009197A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ECC728C82DCF7B51009197A8 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				ECC728C92DCF7B51009197A8 /* SoftCheckAgentTests */,
+			);
+			name = SoftCheckAgentTests;
+			packageProductDependencies = (
+			);
+			productName = SoftCheckAgentTests;
+			productReference = ECC728C62DCF7B51009197A8 /* SoftCheckAgentTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		ECC728CF2DCF7B51009197A8 /* SoftCheckAgentUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ECC728E02DCF7B51009197A8 /* Build configuration list for PBXNativeTarget "SoftCheckAgentUITests" */;
+			buildPhases = (
+				ECC728CC2DCF7B51009197A8 /* Sources */,
+				ECC728CD2DCF7B51009197A8 /* Frameworks */,
+				ECC728CE2DCF7B51009197A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ECC728D22DCF7B51009197A8 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				ECC728D32DCF7B51009197A8 /* SoftCheckAgentUITests */,
+			);
+			name = SoftCheckAgentUITests;
+			packageProductDependencies = (
+			);
+			productName = SoftCheckAgentUITests;
+			productReference = ECC728D02DCF7B51009197A8 /* SoftCheckAgentUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ECC728B02DCF7B50009197A8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					ECC728B72DCF7B50009197A8 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					ECC728C52DCF7B51009197A8 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = ECC728B72DCF7B50009197A8;
+					};
+					ECC728CF2DCF7B51009197A8 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = ECC728B72DCF7B50009197A8;
+					};
+				};
+			};
+			buildConfigurationList = ECC728B32DCF7B50009197A8 /* Build configuration list for PBXProject "SoftCheckAgent" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = ECC728AF2DCF7B50009197A8;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = ECC728B92DCF7B50009197A8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				ECC728B72DCF7B50009197A8 /* SoftCheckAgent */,
+				ECC728C52DCF7B51009197A8 /* SoftCheckAgentTests */,
+				ECC728CF2DCF7B51009197A8 /* SoftCheckAgentUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ECC728B62DCF7B50009197A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECC728C42DCF7B51009197A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECC728CE2DCF7B51009197A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		ECC728B42DCF7B50009197A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECC728C22DCF7B51009197A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECC728CC2DCF7B51009197A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		ECC728C82DCF7B51009197A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ECC728B72DCF7B50009197A8 /* SoftCheckAgent */;
+			targetProxy = ECC728C72DCF7B51009197A8 /* PBXContainerItemProxy */;
+		};
+		ECC728D22DCF7B51009197A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ECC728B72DCF7B50009197A8 /* SoftCheckAgent */;
+			targetProxy = ECC728D12DCF7B51009197A8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		ECC728D82DCF7B51009197A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		ECC728D92DCF7B51009197A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		ECC728DB2DCF7B51009197A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SoftCheckAgent/SoftCheckAgent.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SoftCheck.SoftCheckAgent;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		ECC728DC2DCF7B51009197A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SoftCheckAgent/SoftCheckAgent.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SoftCheck.SoftCheckAgent;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		ECC728DE2DCF7B51009197A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SoftCheck.SoftCheckAgentTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoftCheckAgent.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SoftCheckAgent";
+			};
+			name = Debug;
+		};
+		ECC728DF2DCF7B51009197A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SoftCheck.SoftCheckAgentTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoftCheckAgent.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SoftCheckAgent";
+			};
+			name = Release;
+		};
+		ECC728E12DCF7B51009197A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SoftCheck.SoftCheckAgentUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = SoftCheckAgent;
+			};
+			name = Debug;
+		};
+		ECC728E22DCF7B51009197A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = SoftCheck.SoftCheckAgentUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = SoftCheckAgent;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		ECC728B32DCF7B50009197A8 /* Build configuration list for PBXProject "SoftCheckAgent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ECC728D82DCF7B51009197A8 /* Debug */,
+				ECC728D92DCF7B51009197A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ECC728DA2DCF7B51009197A8 /* Build configuration list for PBXNativeTarget "SoftCheckAgent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ECC728DB2DCF7B51009197A8 /* Debug */,
+				ECC728DC2DCF7B51009197A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ECC728DD2DCF7B51009197A8 /* Build configuration list for PBXNativeTarget "SoftCheckAgentTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ECC728DE2DCF7B51009197A8 /* Debug */,
+				ECC728DF2DCF7B51009197A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ECC728E02DCF7B51009197A8 /* Build configuration list for PBXNativeTarget "SoftCheckAgentUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ECC728E12DCF7B51009197A8 /* Debug */,
+				ECC728E22DCF7B51009197A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = ECC728B02DCF7B50009197A8 /* Project object */;
+}

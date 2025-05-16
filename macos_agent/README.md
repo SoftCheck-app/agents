@@ -154,4 +154,59 @@ El backend por defecto está configurado en `http://127.0.0.1:5000`. Para cambia
 - **No requiere compilación**: Funciona directamente en macOS sin herramientas adicionales
 - **Interfaz visual nativa**: Utiliza diálogos nativos de macOS para mostrar información
 - **Permisos de administrador**: Puede solicitar permisos para eliminar aplicaciones no deseadas
-Este agente es solo para fines educativos. Utilícelo con responsabilidad y siempre respetando la privacidad de los usuarios. 
+Este agente es solo para fines educativos. Utilícelo con responsabilidad y siempre respetando la privacidad de los usuarios.
+
+# Install Monitor
+
+Una aplicación de macOS que monitorea y verifica las instalaciones de software en tiempo real.
+
+## Características
+
+- Monitoreo en tiempo real del directorio de aplicaciones
+- Verificación automática de software con servidor central
+- Cuarentena de aplicaciones no autorizadas
+- Interfaz minimalista en la barra de menú
+- Funcionamiento silencioso en segundo plano
+
+## Requisitos
+
+- macOS 10.15 o superior
+- Xcode 12.0 o superior (para compilar)
+- Acceso a Internet para verificación de software
+
+## Compilación
+
+1. Clona este repositorio
+2. Abre el proyecto en Xcode
+3. Selecciona el target "Install Monitor"
+4. Presiona Cmd+B para compilar
+
+## Instalación
+
+1. Compila el proyecto
+2. Arrastra la aplicación compilada a tu carpeta de Aplicaciones
+3. La aplicación se iniciará automáticamente y aparecerá en la barra de menú
+
+## Uso
+
+La aplicación se ejecuta automáticamente al iniciar sesión y muestra un icono en la barra de menú. El menú desplegable incluye:
+
+- Estado actual del monitor
+- Ver registro de actividad
+- Preferencias
+- Opción para salir
+
+## Seguridad
+
+- La aplicación verifica cada nueva instalación con un servidor central
+- Las aplicaciones no autorizadas son puestas en cuarentena
+- No se requieren permisos de administrador para el funcionamiento básico
+
+## Notas
+
+- La aplicación requiere permisos de accesibilidad para monitorear el directorio de aplicaciones
+- Se recomienda mantener la aplicación actualizada para las últimas características de seguridad
+
+## Licencia
+
+Copyright © 2024. Todos los derechos reservados. 

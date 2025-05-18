@@ -1351,7 +1351,9 @@ function Check-SoftwareDatabase {
     Log 2 "Verificando si $softwareName $version ya existe en la base de datos..."
     
     # Construir el endpoint para la consulta
-    $endpoint = "$($script:BACKEND_URL)/software/exists?name=$([System.Web.HttpUtility]::UrlEncode($softwareName))&version=$([System.Web.HttpUtility]::UrlEncode($version))&deviceId=$deviceId"
+    $name = $softwareName -replace ' ','%20' -replace '\+','%2B' -replace '&','%26'
+    $ver = $version -replace ' ','%20' -replace '\+','%2B' -replace '&','%26'
+    $endpoint = "$($script:BACKEND_URL)/software/exists?name=$name&version=$ver&deviceId=$deviceId"
     
     try {
         # Realizar la consulta al servidor

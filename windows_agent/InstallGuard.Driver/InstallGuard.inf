@@ -1,0 +1,90 @@
+;
+; InstallGuard.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=ActivityMonitor
+ClassGuid={b86dff51-a31e-4bac-b3cf-e8cfe75c9fc2}
+Provider=%ManufacturerName%
+DriverVer=
+CatalogFile=InstallGuard.cat
+PnpLockDown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+InstallGuard.DriverFiles = 12
+
+;;
+;; Default install sections
+;;
+
+[DefaultInstall.NT$ARCH$]
+OptionDesc = %ServiceDescription%
+CopyFiles = InstallGuard.DriverFiles
+
+[DefaultInstall.NT$ARCH$.Services]
+AddService = %ServiceName%,,InstallGuard.Service
+
+;;
+;; Default uninstall sections
+;;
+
+[DefaultUninstall.NT$ARCH$]
+DelFiles = InstallGuard.DriverFiles
+
+[DefaultUninstall.NT$ARCH$.Services]
+DelService = %ServiceName%,0x200
+
+;
+; Services Section
+;
+
+[InstallGuard.Service]
+DisplayName      = %ServiceName%
+Description      = %ServiceDescription%
+ServiceBinary    = %12%\%DriverName%.sys
+Dependencies     = FltMgr
+ServiceType      = 2                            ; SERVICE_FILE_SYSTEM_DRIVER
+StartType        = 3                            ; SERVICE_DEMAND_START
+ErrorControl     = 1                            ; SERVICE_ERROR_NORMAL
+LoadOrderGroup   = "FSFilter Activity Monitor"
+AddReg           = InstallGuard.AddRegistry
+
+;
+; Registry Modifications
+;
+
+[InstallGuard.AddRegistry]
+HKR,,"SupportedFeatures",0x00010001,0x3
+HKR,"Instances","DefaultInstance",0x00000000,%DefaultInstance%
+HKR,"Instances\"%Instance1.Name%,"Altitude",0x00000000,%Instance1.Altitude%
+HKR,"Instances\"%Instance1.Name%,"Flags",0x00010001,%Instance1.Flags%
+
+;
+; Copy Files
+;
+
+[InstallGuard.DriverFiles]
+%DriverName%.sys
+
+[SourceDisksFiles]
+InstallGuard.sys = 1,,
+
+[SourceDisksNames]
+1 = %DiskId1%,,,
+
+;;
+;; String Section
+;;
+
+[Strings]
+ManufacturerName        = "InstallGuard Security"
+ServiceDescription      = "InstallGuard Security Driver"
+ServiceName             = "InstallGuard"
+DriverName              = "InstallGuard"
+DiskId1                 = "InstallGuard Device Installation Disk"
+DefaultInstance         = "InstallGuard Instance"
+Instance1.Name          = "InstallGuard Instance"
+Instance1.Altitude      = "367000"
+Instance1.Flags         = 0x0 

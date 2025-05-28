@@ -1,75 +1,159 @@
-# SoftCheck Windows Agent
+# InstallGuard Service v3.0
 
-Este agente de Windows monitorea continuamente las instalaciones de aplicaciones, verifica su autorización con un servidor central y gestiona el bloqueo o eliminación de aplicaciones no autorizadas.
+## 🛡️ Descripción
 
-## Características principales
+InstallGuard es un servicio de Windows que detecta automáticamente las instalaciones de aplicaciones en el sistema, analiza su nivel de riesgo de seguridad, muestra notificaciones informativas al usuario y **reporta automáticamente todos los datos a una webapp SaaS** para gestión centralizada y aprobación de software.
 
-* **Detección automática** de nuevas aplicaciones instaladas
-* **Verificación de software** con servidor central para determinar si está autorizado
-* **Modos de operación**: activo (bloquea aplicaciones) o pasivo (solo monitoreo)
-* **Cuarentena** para aplicaciones no autorizadas
-* **Actualizaciones automáticas** del propio agente
-* **Funciona como servicio** en segundo plano
+## ✨ Características
 
-## Requisitos
+- **🔍 Detección automática** de instalaciones de aplicaciones
+- **🛡️ Análisis de seguridad** en tiempo real con puntuación de riesgo
+- **📱 Notificaciones popup** informativas y no intrusivas
+- **⚡ Monitoreo continuo** usando WMI y registro de Windows
+- **🎯 Filtrado inteligente** de componentes del sistema
+- **📊 Logging completo** en Event Viewer de Windows
+- **🌐 Reporte automático** a webapp SaaS para gestión centralizada
+- **🔄 Sincronización** de datos con base de datos central
+- **✅ Sistema de aprobación** de software empresarial
 
-- Windows 8.1/10/11 o Windows Server 2016/2019/2022
-- PowerShell 5.1 o superior
-- Permisos de administrador para instalación y algunas operaciones
+## 🚀 Instalación
 
-## Instalación
+### Opción 1: Instalación como Servicio de Windows (Recomendado)
 
-### Como servicio (recomendado)
+1. **Ejecutar como administrador** el archivo `install-service-v3.bat`
+2. El servicio se instalará automáticamente y comenzará a monitorear
+3. Se configurará automáticamente la integración con la webapp SaaS
 
-1. Ejecuta PowerShell como administrador
-2. Navega al directorio donde se encuentra el script
-3. Ejecuta: `.\WindowsInstallAgent.ps1 install`
+### Opción 2: Ejecución Portable
 
-### Ejecución manual
+1. Navegar a la carpeta `portable_v3/`
+2. Ejecutar `InstallGuard.Service.exe` directamente
 
-1. Ejecuta PowerShell como administrador
-2. Navega al directorio donde se encuentra el script
-3. Ejecuta: `.\WindowsInstallAgent.ps1 run`
+## 🗑️ Desinstalación
 
-## Desinstalación
+Ejecutar como administrador el archivo `uninstall-service.bat`
 
-1. Ejecuta PowerShell como administrador
-2. Navega al directorio donde se encuentra el script
-3. Ejecuta: `.\WindowsInstallAgent.ps1 uninstall`
+## ⚙️ Configuración
 
-## Configuración
+El archivo `appsettings.json` contiene la configuración del servicio:
 
-La configuración se guarda en el archivo `%LOCALAPPDATA%\SoftCheck\agent_config.json`. Este archivo se sincroniza automáticamente con el servidor central.
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information"
+    }
+  },
+  "Backend": {
+    "BaseUrl": "http://localhost:4002",
+    "ApiKey": "83dc386a4a636411e068f86bbe5de3bd"
+  },
+  "SoftCheck": {
+    "BaseUrl": "http://localhost:4002/api",
+    "ApiKey": "305f98c40f6ab0224759d1725147ca1b"
+  },
+  "Features": {
+    "EnableDriver": false,
+    "EnableInstallationMonitoring": true
+  }
+}
+```
 
-### Ajustes principales
+### Configuración de Webapp SaaS
 
-- **BACKEND_URL**: URL del servidor de backend
-- **API_KEY**: Clave de API para autenticación con el servidor
-- **SCAN_INTERVAL**: Intervalo en segundos entre escaneos de nuevas aplicaciones
-- **AGENT_STATUS**: Estado del agente (active/inactive)
-- **AGENT_MODE**: Modo de operación (active/passive)
+- **SoftCheck.BaseUrl**: URL de la API de la webapp SaaS
+- **SoftCheck.ApiKey**: Clave de autenticación para la webapp
+- Los datos se envían automáticamente al endpoint `/validate_software`
 
-## Funcionamiento
+## 🔒 Análisis de Seguridad
 
-1. **Monitoreo continuo**: El agente escanea periódicamente las aplicaciones instaladas.
-2. **Detección**: Al detectar una nueva instalación, recopila información detallada.
-3. **Verificación**: Consulta con el servidor central si la aplicación está autorizada.
-4. **Acción**: Según la respuesta del servidor, permite la ejecución, bloquea temporalmente, o elimina la aplicación.
+El sistema evalúa cada aplicación instalada con los siguientes criterios:
 
-## Modos de operación
+### Niveles de Riesgo:
+- **🟢 LOW (0-29 puntos)**: Aplicación parece segura
+- **🟡 MEDIUM (30-49 puntos)**: Monitorear comportamiento
+- **🟠 HIGH (50-69 puntos)**: Verificar legitimidad
+- **🔴 CRITICAL (70+ puntos)**: Desinstalar inmediatamente
 
-- **Activo**: Bloquea automáticamente las aplicaciones no autorizadas
-- **Pasivo**: Solo monitorea e informa, sin tomar acciones restrictivas
+### Factores de Riesgo:
+- Sin firma digital: +30 puntos
+- Publisher desconocido: +20 puntos
+- Ubicación sospechosa: +25 puntos
+- Nombre sospechoso: +40 puntos
 
-## Comparación con la versión para macOS
+## 📋 Información de la Notificación
 
-Este agente es el equivalente para Windows del agente macOS, con las siguientes adaptaciones:
+Cada popup incluye:
+- 📱 Nombre y versión de la aplicación
+- 🏢 Publisher/Desarrollador
+- 📂 Ubicación de instalación
+- 💾 Tamaño estimado
+- 🏗️ Arquitectura (x86/x64)
+- 🛡️ Nivel de riesgo calculado
+- ⚠️ Alertas de seguridad específicas
+- 💡 Recomendaciones de acción
 
-- Usa PowerShell en lugar de Bash
-- Implementa métodos específicos de Windows para detectar aplicaciones (registro y sistema de archivos)
-- Utiliza ACLs de Windows para restringir ejecución en lugar de permisos Unix
-- Se instala como servicio de Windows usando NSSM
+## 🌐 Integración con Webapp SaaS
 
-## Soporte técnico
+### Datos Reportados Automáticamente:
+- 🆔 ID único del dispositivo
+- 👤 Usuario que instaló la aplicación
+- 📦 Información completa de la aplicación
+- 🔐 Hash SHA256 del ejecutable
+- ⏰ Fecha y hora de instalación
+- 🔍 Estado de firma digital
+- 📊 Análisis de riesgo completo
 
-Para soporte técnico, comuníquese con el administrador del sistema o con el equipo de seguridad. 
+### Beneficios:
+- **📊 Visibilidad centralizada** de todo el software instalado
+- **✅ Proceso de aprobación** empresarial
+- **🔍 Auditoría completa** de instalaciones
+- **⚡ Respuesta rápida** a amenazas de seguridad
+
+## 🔧 Requisitos del Sistema
+
+- Windows 10/11
+- .NET 8.0 Runtime (incluido en el ejecutable)
+- Permisos de administrador para instalación
+
+## 📊 Rendimiento
+
+- **CPU**: <1% en uso normal
+- **RAM**: ~15-20MB adicional
+- **Tamaño**: ~75MB ejecutable autocontenido
+- **Red**: Mínimo uso para reportes a webapp
+
+## 📝 Logs
+
+Los logs del servicio se pueden ver en:
+- **Event Viewer** → Windows Logs → Application
+- **Fuente**: InstallGuard Service
+
+## 🏗️ Desarrollo
+
+### Estructura del Proyecto:
+- `InstallGuard.Service/` - Servicio principal
+- `InstallGuard.Common/` - Modelos y utilidades compartidas
+- `InstallGuard.Driver/` - Driver de kernel (deshabilitado)
+- `portable_v3/` - Ejecutable autocontenido v3.0
+
+### Compilación:
+```bash
+dotnet publish InstallGuard.Service -c Release -r win-x64 --self-contained -o portable_v3
+```
+
+### Nuevos Servicios v3.0:
+- `SoftwareReportingService` - Comunicación con webapp SaaS
+- `ISoftwareReportingService` - Interfaz del servicio de reporte
+
+## 📄 Licencia
+
+Este proyecto está bajo licencia MIT.
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor, abra un issue antes de enviar un pull request.
+
+---
+
+**InstallGuard v3.0** - Protección inteligente con gestión centralizada para tu sistema Windows 🛡️🌐 

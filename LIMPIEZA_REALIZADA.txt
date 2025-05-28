@@ -1,0 +1,97 @@
+===============================================================================
+                           LIMPIEZA DE CARPETA WINDOWS_AGENT
+===============================================================================
+
+FECHA: 26/05/2025
+ACCION: Limpieza completa de archivos innecesarios
+
+===============================================================================
+                              ARCHIVOS ELIMINADOS
+===============================================================================
+
+✅ CARPETAS ELIMINADAS:
+- InstallGuard.Service\bin\        (Archivos compilados temporales)
+- InstallGuard.Service\obj\        (Archivos de compilación temporales)
+- InstallGuard.Common\bin\         (Archivos compilados temporales)
+- InstallGuard.Common\obj\         (Archivos de compilación temporales)
+- publish\                         (Versión anterior del ejecutable)
+
+✅ ARCHIVOS ELIMINADOS:
+- portable\*.pdb                   (Archivos de depuración)
+- query                           (Archivo temporal)
+- stop                            (Archivo temporal)
+
+===============================================================================
+                              ARCHIVOS CONSERVADOS
+===============================================================================
+
+📁 CARPETA PORTABLE/ (EJECUTABLE FINAL):
+- InstallGuard.Service.exe         (67.21 MB - Ejecutable autocontenido)
+- appsettings.json                 (280 bytes - Configuración)
+
+📁 SCRIPTS DE GESTIÓN:
+- setup-service.bat                (Instalación completa automática)
+- install-service.bat              (Solo instalación del servicio)
+- uninstall-service.bat            (Desinstalación completa)
+- manage-service.bat               (Menú de gestión)
+- demo-service.bat                 (Demostración)
+
+📁 DOCUMENTACIÓN:
+- GUIA_CREAR_EJECUTABLE.txt        (Guía completa)
+- README_SERVICIO.md               (Documentación del servicio)
+- INSTRUCCIONES_SERVICIO.bat       (Instrucciones específicas)
+
+📁 CÓDIGO FUENTE (SOLO LO ESENCIAL):
+- InstallGuard.sln                 (Archivo de solución)
+- InstallGuard.Service\            (Código fuente del servicio)
+- InstallGuard.Common\             (Código fuente común)
+- InstallGuard.Driver\             (Código fuente del driver)
+
+===============================================================================
+                              ESTADÍSTICAS FINALES
+===============================================================================
+
+📊 ANTES DE LA LIMPIEZA:
+- Archivos: ~300+
+- Tamaño: ~150+ MB
+- Carpetas temporales: 4
+- Archivos duplicados: Múltiples
+
+📊 DESPUÉS DE LA LIMPIEZA:
+- Archivos: 38
+- Tamaño total: 67.37 MB
+- Reducción: ~55% del tamaño
+- Solo archivos esenciales
+
+===============================================================================
+                              ARCHIVOS LISTOS PARA USO
+===============================================================================
+
+🚀 PARA USAR EL AGENTE:
+1. Carpeta portable\ contiene todo lo necesario
+2. Solo 2 archivos: InstallGuard.Service.exe + appsettings.json
+3. Ejecutable autocontenido de 67.21 MB
+
+🔧 PARA INSTALAR COMO SERVICIO:
+1. Ejecutar setup-service.bat como administrador
+2. Seguir las instrucciones en pantalla
+
+📖 PARA DOCUMENTACIÓN:
+1. Leer GUIA_CREAR_EJECUTABLE.txt
+2. Consultar README_SERVICIO.md
+3. Ejecutar INSTRUCCIONES_SERVICIO.bat
+
+===============================================================================
+                              BENEFICIOS DE LA LIMPIEZA
+===============================================================================
+
+✅ Espacio liberado: ~80+ MB
+✅ Archivos reducidos: De 300+ a 38
+✅ Solo archivos esenciales
+✅ Estructura más clara
+✅ Fácil distribución
+✅ Sin archivos temporales
+✅ Sin duplicados
+✅ Carpeta portable lista para usar
+
+=============================================================================== 

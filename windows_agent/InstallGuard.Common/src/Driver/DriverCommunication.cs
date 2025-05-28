@@ -2,6 +2,7 @@ using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 
 namespace InstallGuard.Common.Driver
 {

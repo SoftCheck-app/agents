@@ -24,13 +24,15 @@ namespace InstallGuard.Service.Services
         /// <param name="logger">Logger para registrar eventos</param>
         /// <param name="backendService">Servicio para comunicación con el backend</param>
         /// <param name="fileCleanupService">Servicio para limpieza de archivos</param>
+        /// <param name="loggerFactory">Factory para crear loggers</param>
         public DriverService(
             ILogger<DriverService> logger,
             IBackendService backendService,
-            IFileCleanupService fileCleanupService)
+            IFileCleanupService fileCleanupService,
+            ILoggerFactory loggerFactory)
         {
             _logger = logger;
-            _driverCommunication = new DriverCommunication(logger);
+            _driverCommunication = new DriverCommunication(loggerFactory.CreateLogger<DriverCommunication>());
             _backendService = backendService;
             _fileCleanupService = fileCleanupService;
         }
@@ -187,6 +189,10 @@ namespace InstallGuard.Service.Services
                 var verificationRequest = MapToVerificationRequest(installRequest);
                 var verificationResponse = await _backendService.VerifyInstallationAsync(verificationRequest);
 
+                // Por defecto, denegar la instalación
+                verificationResponse.IsApproved = false;
+                verificationResponse.Reason = "Instalación bloqueada por política de seguridad";
+
                 // Enviar respuesta al controlador
                 var response = InstallGuardResponse.Create(
                     (uint)installRequest.RequestId,
@@ -205,15 +211,12 @@ namespace InstallGuard.Service.Services
                     _logger.LogError("Error al enviar respuesta al controlador");
                 }
 
-                // Si se deniega la instalación, programar limpieza de archivos
-                if (!verificationResponse.IsApproved)
+                // Programar limpieza de archivos
+                _fileCleanupService.ScheduleCleanup(new CleanupRequest
                 {
-                    _fileCleanupService.ScheduleCleanup(new CleanupRequest
-                    {
-                        FilePath = message.FilePath,
-                        Timestamp = DateTime.Now
-                    });
-                }
+                    FilePath = message.FilePath,
+                    Timestamp = DateTime.Now
+                });
             }
             catch (Exception ex)
             {
@@ -283,7 +286,7 @@ namespace InstallGuard.Service.Services
         }
 
         /// <summary>
-        /// Mapea una solicitud de instalación a una solicitud de verificación para el backend
+        /// Mapea una solicitud de instalación a una solicitud de verificación
         /// </summary>
         /// <param name="request">Solicitud de instalación</param>
         /// <returns>Solicitud de verificación</returns>
@@ -292,12 +295,11 @@ namespace InstallGuard.Service.Services
             return new InstallVerificationRequest
             {
                 FilePath = request.FilePath,
-                FileName = Path.GetFileName(request.FilePath),
-                FileHash = request.FileHash,
                 FileSize = request.FileSize,
+                FileHash = request.FileHash,
+                ProcessId = request.ProcessId,
                 ProcessName = request.ProcessName,
                 Username = request.Username,
-                MachineName = Environment.MachineName,
                 Timestamp = request.Timestamp
             };
         }

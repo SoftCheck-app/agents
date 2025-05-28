@@ -1,17 +1,17 @@
 namespace InstallGuard.Common.Models
 {
     /// <summary>
-    /// Modelo para la solicitud de instalación enviada desde el controlador al servicio
+    /// Modelo para una solicitud de instalación
     /// </summary>
     public class InstallRequest
     {
         /// <summary>
-        /// Identificador único de la solicitud de instalación
+        /// ID de la solicitud
         /// </summary>
         public long RequestId { get; set; }
 
         /// <summary>
-        /// Ruta completa del archivo que se intenta instalar
+        /// Ruta del archivo a instalar
         /// </summary>
         public string FilePath { get; set; } = string.Empty;
 
@@ -21,28 +21,28 @@ namespace InstallGuard.Common.Models
         public long FileSize { get; set; }
 
         /// <summary>
-        /// Hash del archivo (calculado por el servicio)
+        /// Hash del archivo (SHA256)
         /// </summary>
-        public string FileHash { get; set; } = string.Empty;
+        public string? FileHash { get; set; }
 
         /// <summary>
-        /// Identificador del proceso que intenta realizar la instalación
+        /// ID del proceso que intenta la instalación
         /// </summary>
         public int ProcessId { get; set; }
 
         /// <summary>
-        /// Nombre del proceso que intenta realizar la instalación
+        /// Nombre del proceso que intenta la instalación
         /// </summary>
         public string ProcessName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Nombre del usuario que intenta realizar la instalación
+        /// Nombre del usuario que intenta la instalación
         /// </summary>
         public string Username { get; set; } = string.Empty;
 
         /// <summary>
-        /// Fecha y hora en que se realizó el intento de instalación
+        /// Marca de tiempo de la solicitud
         /// </summary>
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp { get; set; }
     }
 } 

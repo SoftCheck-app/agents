@@ -1,0 +1,4 @@
+D:\GAMES\agents\windows_agent\portable_v3_final\appsettings.json
+D:\GAMES\agents\windows_agent\portable_v3_final\InstallGuard.Service.pdb
+D:\GAMES\agents\windows_agent\portable_v3_final\InstallGuard.Common.pdb
+D:\GAMES\agents\windows_agent\portable_v3_final\InstallGuard.Service.exe

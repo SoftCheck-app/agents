@@ -81,6 +81,10 @@ namespace InstallGuard.Service.Services
                 // Cargar estado inicial de aplicaciones instaladas
                 await LoadInitialApplicationsAsync();
 
+                // Enviar inventario completo inicial a la webapp
+                _logger.LogInformation("Enviando inventario inicial completo a webapp...");
+                await SendAllApplicationsToWebappAsync();
+
                 // Iniciar monitoreo WMI para eventos de instalación
                 StartWMIMonitoring();
 
@@ -165,8 +169,8 @@ namespace InstallGuard.Service.Services
 
         private void StartRegistryMonitoring()
         {
-            // Verificar cambios en el registro cada 10 segundos
-            _registryTimer = new Timer(CheckRegistryChanges, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+            // Verificar cambios en el registro cada 30 segundos
+            _registryTimer = new Timer(CheckRegistryChanges, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
             _logger.LogInformation("Monitoreo de registro iniciado");
         }
 
@@ -193,6 +197,9 @@ namespace InstallGuard.Service.Services
             try
             {
                 await CheckForApplicationChangesAsync();
+                
+                // Enviar inventario completo de aplicaciones cada vez
+                await SendAllApplicationsToWebappAsync();
             }
             catch (Exception ex)
             {
@@ -298,6 +305,58 @@ namespace InstallGuard.Service.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error verificando cambios en aplicaciones");
+            }
+        }
+
+        /// <summary>
+        /// Envía todas las aplicaciones instaladas a la webapp SaaS
+        /// </summary>
+        private async Task SendAllApplicationsToWebappAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Enviando inventario completo de aplicaciones a webapp...");
+                
+                var allApplications = await GetInstalledApplicationsAsync();
+                _logger.LogInformation($"Encontradas {allApplications.Count} aplicaciones instaladas para enviar");
+
+                if (allApplications.Count == 0)
+                {
+                    _logger.LogInformation("No hay aplicaciones para enviar");
+                    return;
+                }
+
+                // Enriquecer información de todas las aplicaciones antes del envío
+                foreach (var app in allApplications)
+                {
+                    try
+                    {
+                        EnrichApplicationInfo(app);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, $"Error enriqueciendo información de {app.Name}");
+                    }
+                }
+
+                // Usar el método de envío en lotes para mejor rendimiento
+                var (successCount, errorCount) = await _softwareReportingService.ReportInventoryBatchAsync(allApplications, batchSize: 5);
+
+                _logger.LogInformation($"Inventario completo enviado: {successCount} exitosas, {errorCount} errores de {allApplications.Count} total");
+
+                // Log adicional si hay muchos errores
+                if (errorCount > 0)
+                {
+                    var errorPercentage = (double)errorCount / allApplications.Count * 100;
+                    if (errorPercentage > 20)
+                    {
+                        _logger.LogWarning($"Alto porcentaje de errores en envío de inventario: {errorPercentage:F1}%");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error enviando inventario completo a webapp");
             }
         }
 

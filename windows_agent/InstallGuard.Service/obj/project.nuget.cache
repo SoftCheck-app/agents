@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "W6b8B/YPai9UhnaCbIPRyY2lh83syjuSACApBjgnHSFufwZf9qzIoDZG74448q8JK0pzNpNr3ZHiOm9c5KOj8w==",
+  "dgSpecHash": "r09ZLSmnaA7/DyROiY83EhCMch/y41S6Ujz3ifwyruwB979Gm89Kii4kEQT4wyypaFFDHcxEsC1gr1la7DwDdw==",
   "success": true,
   "projectFilePath": "D:\\GAMES\\agents\\windows_agent\\InstallGuard.Service\\InstallGuard.Service.csproj",
   "expectedPackageFiles": [
@@ -33,7 +33,6 @@
     "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.extensions.options\\8.0.0\\microsoft.extensions.options.8.0.0.nupkg.sha512",
     "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\8.0.0\\microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
     "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
-    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.3\\microsoft.net.illink.tasks.8.0.3.nupkg.sha512",
     "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.win32.systemevents\\8.0.0\\microsoft.win32.systemevents.8.0.0.nupkg.sha512",

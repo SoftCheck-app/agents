@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InstallGuard.Common")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d85d863a1ac9f1bd40edc4af1e820260d7d144eb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22b7a284131146f5fb52c77584c77e41f58c7230")]
 [assembly: System.Reflection.AssemblyProductAttribute("InstallGuard.Common")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InstallGuard.Common")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

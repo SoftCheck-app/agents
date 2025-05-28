@@ -28,5 +28,13 @@ namespace InstallGuard.Service.Services
         /// </summary>
         /// <returns>True si hay conectividad, false en caso contrario</returns>
         Task<bool> TestConnectivityAsync();
+
+        /// <summary>
+        /// Envía múltiples aplicaciones en lotes para optimizar el rendimiento del inventario completo
+        /// </summary>
+        /// <param name="applications">Lista de aplicaciones a enviar</param>
+        /// <param name="batchSize">Tamaño del lote (por defecto 10)</param>
+        /// <returns>Tupla con el número de aplicaciones enviadas exitosamente y fallidas</returns>
+        Task<(int successful, int failed)> ReportInventoryBatchAsync(List<ApplicationInfo> applications, int batchSize = 10);
     }
 } 

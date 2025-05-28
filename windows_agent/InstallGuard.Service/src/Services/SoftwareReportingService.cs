@@ -159,6 +159,56 @@ namespace InstallGuard.Service.Services
             }
         }
 
+        /// <summary>
+        /// Envía múltiples aplicaciones en lotes para optimizar el rendimiento
+        /// </summary>
+        public async Task<(int successful, int failed)> ReportInventoryBatchAsync(List<ApplicationInfo> applications, int batchSize = 10)
+        {
+            int successCount = 0;
+            int failCount = 0;
+            var userId = GetCurrentUserId();
+
+            _logger.LogInformation($"Enviando inventario de {applications.Count} aplicaciones en lotes de {batchSize}");
+
+            // Procesar en lotes para no sobrecargar la webapp
+            for (int i = 0; i < applications.Count; i += batchSize)
+            {
+                var batch = applications.Skip(i).Take(batchSize).ToList();
+                _logger.LogDebug($"Procesando lote {(i / batchSize) + 1}: {batch.Count} aplicaciones");
+
+                // Procesar cada aplicación del lote
+                var batchTasks = batch.Select(async app =>
+                {
+                    try
+                    {
+                        var success = await ReportApplicationAsync(app, _deviceId, userId);
+                        return success;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"Error enviando aplicación en lote: {app.Name}");
+                        return false;
+                    }
+                });
+
+                // Esperar a que se complete el lote
+                var results = await Task.WhenAll(batchTasks);
+                
+                // Contar resultados
+                successCount += results.Count(r => r);
+                failCount += results.Count(r => !r);
+
+                // Pausa entre lotes para no sobrecargar el servidor
+                if (i + batchSize < applications.Count)
+                {
+                    await Task.Delay(1000); // 1 segundo entre lotes
+                }
+            }
+
+            _logger.LogInformation($"Inventario completado: {successCount} exitosas, {failCount} fallidas");
+            return (successCount, failCount);
+        }
+
         private string GetDeviceId()
         {
             try

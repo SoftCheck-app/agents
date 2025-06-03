@@ -1,6 +1,4 @@
-Daemon de sincronización iniciado con PID: 80261
-./MacOSInstallAgent.sh: line 61: [: -gt: unary operator expected
-./MacOSInstallAgent.sh: line 71: [: -gt: unary operator expected
+Daemon de sincronización iniciado con PID: 7006
 ========================================
   CONFIGURACIÓN ACTUAL DEL AGENTE
 ========================================
@@ -11,10 +9,12 @@ Daemon de sincronización iniciado con PID: 80261
  Conexión   : DESCONECTADO
 ========================================
 Iniciando monitor de instalaciones...
-Sincronizando configuración con el servidor...
-Device ID: SERIAL-KPWKTV5XWY
 Carpeta de cuarentena configurada: /Users/mistborn/Library/Application Support/AppQuarantine
 Carpeta de configuración configurada: /Users/mistborn/.softcheck
+Limpiando lista de aplicaciones pendientes...
+Lista de aplicaciones pendientes limpiada
+Sincronizando configuración con el servidor...
+Device ID: SERIAL-KPWKTV5XWY
 Configuración cargada desde archivo local
 ========================================
   CONFIGURACIÓN ACTUAL DEL AGENTE
@@ -22,277 +22,838 @@ Configuración cargada desde archivo local
  Status     : active (ACTIVO)
  Mode       : active (ACTIVO)
 Archivo de configuración actualizado
+Ping exitoso: Estado del agente actualizado en el servidor
+Verificando actualizaciones del agente...
  Device ID  : SERIAL-KPWKTV5XWY
  Servidor   : http://localhost:4002/api
  Conexión   : DESCONECTADO
 ========================================
 Sincronizando configuración con el servidor...
 Device ID: SERIAL-KPWKTV5XWY
-Ping exitoso: Estado del agente actualizado en el servidor
-Verificando actualizaciones del agente...
+El agente está actualizado
+Próximo ping en 60 segundos...
 Archivo de configuración actualizado
 Verificando actualizaciones del agente...
 El agente está actualizado
-El agente está actualizado
-Próximo ping en 60 segundos...
-Se han detectado 60 aplicaciones iniciales
+Se han detectado 61 aplicaciones iniciales
 Verificando aplicaciones pendientes...
-1 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software registered successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02"}
-DEBUG - isApproved: false, isRejected: false, reason: , notes: 
-Software aún pendiente de autorización
-pending
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Verificación de aplicaciones pendientes completada
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
 Verificando aplicaciones pendientes...
-1 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","notes":null}
-DEBUG - isApproved: false, isRejected: false, reason: , notes: 
-Software aún pendiente de autorización
-pending
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Verificación de aplicaciones pendientes completada
-Nueva aplicación detectada: TestApp2.app
-Modo activo. Restringiendo ejecución de TestApp2 temporalmente
-Restringiendo permisos de ejecución para: /Applications/TestApp2.app
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Nueva aplicación detectada: TestNewApp2025.app
+Modo activo. Restringiendo ejecución de TestNewApp2025 temporalmente
+Restringiendo permisos de ejecución para: /Applications/TestNewApp2025.app
 Contenido del directorio MacOS:
-  total 0
-  drwxr-xr-x@ 2 mistborn  admin   64 Jun  3 16:47 .
-  drwxr-xr-x@ 4 mistborn  admin  128 Jun  3 16:47 ..
+  total 8
+  drwxr-xr-x@ 3 mistborn  admin   96 Jun  3 22:44 .
+  drwxr-xr-x@ 4 mistborn  admin  128 Jun  3 22:44 ..
+  -rwxr-xr-x@ 1 mistborn  admin   28 Jun  3 22:44 TestNewApp2025
 Guardando permisos originales de ejecutables en MacOS...
-ADVERTENCIA: No se encontró ejecutable principal
+Archivo ejecutable encontrado: /Applications/TestNewApp2025.app/Contents/MacOS/TestNewApp2025 (permisos: 100755)
+Ejecutable principal detectado: /Applications/TestNewApp2025.app/Contents/MacOS/TestNewApp2025
 Quitando permisos de ejecución a archivos en MacOS...
-Permisos restringidos para: /Applications/TestApp2.app
-Mostrando diálogo de verificación de seguridad para TestApp2...
+Permisos restringidos para: /Applications/TestNewApp2025.app
+Mostrando diálogo de verificación de seguridad para TestNewApp2025...
 Intentando mostrar diálogo: Proceso de Verificación de Seguridad
 Diálogo mostrado exitosamente: Proceso de Verificación de Seguridad
 button returned:OK
-Diálogo de verificación mostrado para TestApp2
-Enviando TestApp2 al servidor para verificación...
-Verificando software: TestApp2 desconocida
-Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación TestApp2 añadida a la lista de pendientes
+Diálogo de verificación mostrado para TestNewApp2025
+Enviando TestNewApp2025 al servidor para verificación...
+Verificando software: TestNewApp2025 desconocida
+DEBUG - Valores originales para TestNewApp2025:
+DEBUG - app_name: 'TestNewApp2025'
+DEBUG - app_version: 'desconocida'
+DEBUG - app_path: '/Applications/TestNewApp2025.app'
+DEBUG - sha256: '0082db8e1331d80ae174c548817d12ce25351d4a30b045bde6cdb4d75b402f0b'
+DEBUG - username: 'mistborn'
+DEBUG - device_id: 'SERIAL-KPWKTV5XWY'
+DEBUG - vendor: 'desconocido'
+DEBUG - install_date: '2025-06-03T22:44:57Z'
+DEBUG - is_running: 'false'
+DEBUG - digital_signature: 'false'
+DEBUG - JSON construido para enviar:
+DEBUG - JSON: {
+    "device_id": "SERIAL-KPWKTV5XWY",
+    "user_id": "mistborn",
+    "software_name": "TestNewApp2025",
+    "version": "desconocida",
+    "vendor": "desconocido",
+    "install_date": "2025-06-03T22:44:57Z",
+    "install_path": "/Applications/TestNewApp2025.app",
+    "install_method": "manual",
+    "last_executed": null,
+    "is_running": false,
+    "digital_signature": false,
+    "is_approved": false,
+    "detected_by": "macos_agent",
+    "sha256": "0082db8e1331d80ae174c548817d12ce25351d4a30b045bde6cdb4d75b402f0b",
+    "notes": null}
+DEBUG - JSON validado correctamente con jq
+DEBUG - Enviando petición POST a: http://localhost:4002/api/validate_software
+DEBUG - curl exit code: 0
+DEBUG - curl error: 
+DEBUG - Respuesta del servidor: {"success":true,"message":"Software registered successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en la respuesta
+Software ID: cmbgzmcmv00054lhbygaa50u8, IsApproved: false, IsRejected: false, Mapped Status: pending
+ls: fts_read: Permission denied
+Aplicación TestNewApp2025 añadida a la lista de pendientes con todos los datos
 Resultado de verificación: pending
-TestApp2 necesita aprobación. Añadiendo a lista de verificación cada 10 segundos
-Aplicación TestApp2 añadida a la lista de pendientes
+TestNewApp2025 sigue pendiente de aprobación
 Verificando aplicaciones pendientes...
-3 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","notes":null}
-DEBUG - isApproved: false, isRejected: false, reason: , notes: 
-Software aún pendiente de autorización
-pending
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Re-verificando estado de TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
-Consultando estado de autorización para TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
-DEBUG - Respuesta del servidor para TestApp2: {"success":true,"message":"Software registered successfully","isApproved":false,"softwareId":"cmbgmvht300784ljdjbo5e3jr"}
-DEBUG - isApproved: false, isRejected: false, reason: , notes: 
-Software aún pendiente de autorización
-pending
-Usando método de re-verificación tradicional para TestApp2...
-Verificando software: TestApp2 desconocida
-Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación TestApp2 añadida a la lista de pendientes
-Resultado de verificación: pending
-TestApp2 sigue pendiente de aprobación
-Re-verificando estado de TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
-Consultando estado de autorización para TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
-DEBUG - Respuesta del servidor para TestApp2: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmvht300784ljdjbo5e3jr","notes":null}
-DEBUG - isApproved: false, isRejected: false, reason: , notes: 
-Software aún pendiente de autorización
-pending
-Usando método de re-verificación tradicional para TestApp2...
-Verificando software: TestApp2 desconocida
-Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación TestApp2 añadida a la lista de pendientes
-Resultado de verificación: pending
-TestApp2 sigue pendiente de aprobación
-Verificación de aplicaciones pendientes completada
-Verificando aplicaciones pendientes...
-3 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
-DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Re-verificando estado de TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
-Consultando estado de autorización para TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
-DEBUG - Respuesta del servidor para TestApp2: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmvht300784ljdjbo5e3jr","notes":null}
-DEBUG - isApproved: false, isRejected: false, reason: , notes: 
-Software aún pendiente de autorización
-pending
-Usando método de re-verificación tradicional para TestApp2...
-Verificando software: TestApp2 desconocida
-Software rechazado por autorización. Razón: No se pudo encontrar información sobre 'TestApp2'.  Versión y SHA256 desconocidos impiden evaluar el riesgo con precisión.  Ausencia de información incrementa la incertidumbre y por lo tanto el riesgo.
-Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: true, Mapped Status: rejected
-Razón detallada: No se pudo encontrar información sobre 'TestApp2'.  Versión y SHA256 desconocidos impiden evaluar el riesgo con precisión.  Ausencia de información incrementa la incertidumbre y por lo tanto el riesgo.
-Resultado de verificación: rejected
-TestApp2 ha sido rechazado. Eliminando...
-Intentando mostrar diálogo: Análisis Completado - DENEGADO
-Diálogo mostrado exitosamente: Análisis Completado - DENEGADO
-button returned:OK
-Aplicación eliminada: /Applications/TestApp2.app
-Aplicación TestApp2 eliminada correctamente
-Re-verificando estado de TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
-Consultando estado de autorización para TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
-DEBUG - Respuesta del servidor para TestApp2: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmvht300784ljdjbo5e3jr","notes":null}
-DEBUG - isApproved: false, isRejected: false, reason: , notes: 
-Software aún pendiente de autorización
-pending
-Usando método de re-verificación tradicional para TestApp2...
-Verificando software: TestApp2 desconocida
-Software rechazado por autorización. Razón: No se pudo encontrar información sobre 'TestApp2'.  Versión y SHA256 desconocidos impiden evaluar el riesgo con precisión.  Ausencia de información incrementa la incertidumbre y por lo tanto el riesgo.
-Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: true, Mapped Status: rejected
-Razón detallada: No se pudo encontrar información sobre 'TestApp2'.  Versión y SHA256 desconocidos impiden evaluar el riesgo con precisión.  Ausencia de información incrementa la incertidumbre y por lo tanto el riesgo.
-Resultado de verificación: rejected
-TestApp2 ha sido rechazado. Eliminando...
-Intentando mostrar diálogo: Análisis Completado - DENEGADO
-Diálogo mostrado exitosamente: Análisis Completado - DENEGADO
-button returned:OK
-Aplicación eliminada (método alternativo): /Applications/TestApp2.app
-Aplicación TestApp2 eliminada correctamente
-Eliminando cmbgmv9je00764ljd8ihag2id de la lista de pendientes...
-Eliminando cmbgmv9je00764ljd8ihag2id de la lista de pendientes...
-Verificación de aplicaciones pendientes completada
-Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+Verificando 1 aplicaciones pendientes...
+Manteniendo aplicación válida: TestNewApp2025
+No se encontraron aplicaciones inexistentes que eliminar
 1 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
-DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
+Re-verificando estado de TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+Consultando estado de autorización para TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+DEBUG - Respuesta del servidor para TestNewApp2025: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en check_authorization_status
+DEBUG - isApproved: false, isRejected: false, reason: 
+Software sigue pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestNewApp2025...
+Verificando software: TestNewApp2025 desconocida
+DEBUG - Valores originales para TestNewApp2025:
+DEBUG - app_name: 'TestNewApp2025'
+DEBUG - app_version: 'desconocida'
+DEBUG - app_path: '/Applications/TestNewApp2025.app'
+DEBUG - sha256: 'no_disponible'
+DEBUG - username: 'mistborn'
+DEBUG - device_id: 'SERIAL-KPWKTV5XWY'
+DEBUG - vendor: 'desconocido'
+DEBUG - install_date: '2025-06-03T22:44:57Z'
+DEBUG - is_running: 'false'
+DEBUG - digital_signature: 'false'
+DEBUG - JSON construido para enviar:
+DEBUG - JSON: {
+    "device_id": "SERIAL-KPWKTV5XWY",
+    "user_id": "mistborn",
+    "software_name": "TestNewApp2025",
+    "version": "desconocida",
+    "vendor": "desconocido",
+    "install_date": "2025-06-03T22:44:57Z",
+    "install_path": "/Applications/TestNewApp2025.app",
+    "install_method": "manual",
+    "last_executed": null,
+    "is_running": false,
+    "digital_signature": false,
+    "is_approved": false,
+    "detected_by": "macos_agent",
+    "sha256": "no_disponible",
+    "notes": null}
+DEBUG - JSON validado correctamente con jq
+DEBUG - Enviando petición POST a: http://localhost:4002/api/validate_software
+DEBUG - curl exit code: 0
+DEBUG - curl error: 
+DEBUG - Respuesta del servidor: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en la respuesta
+Software ID: cmbgzmcmv00054lhbygaa50u8, IsApproved: false, IsRejected: false, Mapped Status: pending
+ls: fts_read: Permission denied
+Aplicación TestNewApp2025 añadida a la lista de pendientes con todos los datos
 Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
+TestNewApp2025 sigue pendiente de aprobación
 Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+Verificando 1 aplicaciones pendientes...
+Manteniendo aplicación válida: TestNewApp2025
+No se encontraron aplicaciones inexistentes que eliminar
+1 aplicaciones pendientes encontradas
+Re-verificando estado de TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+Consultando estado de autorización para TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+DEBUG - Respuesta del servidor para TestNewApp2025: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en check_authorization_status
+DEBUG - isApproved: false, isRejected: false, reason: 
+Software sigue pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestNewApp2025...
+Verificando software: TestNewApp2025 desconocida
+DEBUG - Valores originales para TestNewApp2025:
+DEBUG - app_name: 'TestNewApp2025'
+DEBUG - app_version: 'desconocida'
+DEBUG - app_path: '/Applications/TestNewApp2025.app'
+DEBUG - sha256: 'no_disponible'
+DEBUG - username: 'mistborn'
+DEBUG - device_id: 'SERIAL-KPWKTV5XWY'
+DEBUG - vendor: 'desconocido'
+DEBUG - install_date: '2025-06-03T22:44:57Z'
+DEBUG - is_running: 'false'
+DEBUG - digital_signature: 'false'
+DEBUG - JSON construido para enviar:
+DEBUG - JSON: {
+    "device_id": "SERIAL-KPWKTV5XWY",
+    "user_id": "mistborn",
+    "software_name": "TestNewApp2025",
+    "version": "desconocida",
+    "vendor": "desconocido",
+    "install_date": "2025-06-03T22:44:57Z",
+    "install_path": "/Applications/TestNewApp2025.app",
+    "install_method": "manual",
+    "last_executed": null,
+    "is_running": false,
+    "digital_signature": false,
+    "is_approved": false,
+    "detected_by": "macos_agent",
+    "sha256": "no_disponible",
+    "notes": null}
+DEBUG - JSON validado correctamente con jq
+DEBUG - Enviando petición POST a: http://localhost:4002/api/validate_software
+DEBUG - curl exit code: 0
+DEBUG - curl error: 
+DEBUG - Respuesta del servidor: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en la respuesta
+Software ID: cmbgzmcmv00054lhbygaa50u8, IsApproved: false, IsRejected: false, Mapped Status: pending
+ls: fts_read: Permission denied
+Aplicación TestNewApp2025 añadida a la lista de pendientes con todos los datos
+Resultado de verificación: pending
+TestNewApp2025 sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+Verificando 1 aplicaciones pendientes...
+Manteniendo aplicación válida: TestNewApp2025
+No se encontraron aplicaciones inexistentes que eliminar
+1 aplicaciones pendientes encontradas
+Re-verificando estado de TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+Consultando estado de autorización para TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+DEBUG - Respuesta del servidor para TestNewApp2025: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en check_authorization_status
+DEBUG - isApproved: false, isRejected: false, reason: 
+Software sigue pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestNewApp2025...
+Verificando software: TestNewApp2025 desconocida
+DEBUG - Valores originales para TestNewApp2025:
+DEBUG - app_name: 'TestNewApp2025'
+DEBUG - app_version: 'desconocida'
+DEBUG - app_path: '/Applications/TestNewApp2025.app'
+DEBUG - sha256: 'no_disponible'
+DEBUG - username: 'mistborn'
+DEBUG - device_id: 'SERIAL-KPWKTV5XWY'
+DEBUG - vendor: 'desconocido'
+DEBUG - install_date: '2025-06-03T22:44:57Z'
+DEBUG - is_running: 'false'
+DEBUG - digital_signature: 'false'
+DEBUG - JSON construido para enviar:
+DEBUG - JSON: {
+    "device_id": "SERIAL-KPWKTV5XWY",
+    "user_id": "mistborn",
+    "software_name": "TestNewApp2025",
+    "version": "desconocida",
+    "vendor": "desconocido",
+    "install_date": "2025-06-03T22:44:57Z",
+    "install_path": "/Applications/TestNewApp2025.app",
+    "install_method": "manual",
+    "last_executed": null,
+    "is_running": false,
+    "digital_signature": false,
+    "is_approved": false,
+    "detected_by": "macos_agent",
+    "sha256": "no_disponible",
+    "notes": null}
+DEBUG - JSON validado correctamente con jq
+DEBUG - Enviando petición POST a: http://localhost:4002/api/validate_software
+DEBUG - curl exit code: 0
+DEBUG - curl error: 
+DEBUG - Respuesta del servidor: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en la respuesta
+Software ID: cmbgzmcmv00054lhbygaa50u8, IsApproved: false, IsRejected: false, Mapped Status: pending
+ls: fts_read: Permission denied
+Aplicación TestNewApp2025 añadida a la lista de pendientes con todos los datos
+Resultado de verificación: pending
+TestNewApp2025 sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+Verificando 1 aplicaciones pendientes...
+Manteniendo aplicación válida: TestNewApp2025
+No se encontraron aplicaciones inexistentes que eliminar
+1 aplicaciones pendientes encontradas
+Re-verificando estado de TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+Consultando estado de autorización para TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+DEBUG - Respuesta del servidor para TestNewApp2025: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en check_authorization_status
+DEBUG - isApproved: false, isRejected: false, reason: 
+Software sigue pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestNewApp2025...
+Verificando software: TestNewApp2025 desconocida
+DEBUG - Valores originales para TestNewApp2025:
+DEBUG - app_name: 'TestNewApp2025'
+DEBUG - app_version: 'desconocida'
+DEBUG - app_path: '/Applications/TestNewApp2025.app'
+DEBUG - sha256: 'no_disponible'
+DEBUG - username: 'mistborn'
+DEBUG - device_id: 'SERIAL-KPWKTV5XWY'
+DEBUG - vendor: 'desconocido'
+DEBUG - install_date: '2025-06-03T22:44:57Z'
+DEBUG - is_running: 'false'
+DEBUG - digital_signature: 'false'
+DEBUG - JSON construido para enviar:
+DEBUG - JSON: {
+    "device_id": "SERIAL-KPWKTV5XWY",
+    "user_id": "mistborn",
+    "software_name": "TestNewApp2025",
+    "version": "desconocida",
+    "vendor": "desconocido",
+    "install_date": "2025-06-03T22:44:57Z",
+    "install_path": "/Applications/TestNewApp2025.app",
+    "install_method": "manual",
+    "last_executed": null,
+    "is_running": false,
+    "digital_signature": false,
+    "is_approved": false,
+    "detected_by": "macos_agent",
+    "sha256": "no_disponible",
+    "notes": null}
+DEBUG - JSON validado correctamente con jq
+DEBUG - Enviando petición POST a: http://localhost:4002/api/validate_software
+DEBUG - curl exit code: 0
+DEBUG - curl error: 
+DEBUG - Respuesta del servidor: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en la respuesta
+Software ID: cmbgzmcmv00054lhbygaa50u8, IsApproved: false, IsRejected: false, Mapped Status: pending
+ls: fts_read: Permission denied
+Aplicación TestNewApp2025 añadida a la lista de pendientes con todos los datos
+Resultado de verificación: pending
+TestNewApp2025 sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+Verificando 1 aplicaciones pendientes...
+Manteniendo aplicación válida: TestNewApp2025
+No se encontraron aplicaciones inexistentes que eliminar
+1 aplicaciones pendientes encontradas
+Re-verificando estado de TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+Consultando estado de autorización para TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+DEBUG - Respuesta del servidor para TestNewApp2025: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en check_authorization_status
+DEBUG - isApproved: false, isRejected: false, reason: 
+Software sigue pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestNewApp2025...
+Verificando software: TestNewApp2025 desconocida
+DEBUG - Valores originales para TestNewApp2025:
+DEBUG - app_name: 'TestNewApp2025'
+DEBUG - app_version: 'desconocida'
+DEBUG - app_path: '/Applications/TestNewApp2025.app'
+DEBUG - sha256: 'no_disponible'
+DEBUG - username: 'mistborn'
+DEBUG - device_id: 'SERIAL-KPWKTV5XWY'
+DEBUG - vendor: 'desconocido'
+DEBUG - install_date: '2025-06-03T22:44:57Z'
+DEBUG - is_running: 'false'
+DEBUG - digital_signature: 'false'
+DEBUG - JSON construido para enviar:
+DEBUG - JSON: {
+    "device_id": "SERIAL-KPWKTV5XWY",
+    "user_id": "mistborn",
+    "software_name": "TestNewApp2025",
+    "version": "desconocida",
+    "vendor": "desconocido",
+    "install_date": "2025-06-03T22:44:57Z",
+    "install_path": "/Applications/TestNewApp2025.app",
+    "install_method": "manual",
+    "last_executed": null,
+    "is_running": false,
+    "digital_signature": false,
+    "is_approved": false,
+    "detected_by": "macos_agent",
+    "sha256": "no_disponible",
+    "notes": null}
+DEBUG - JSON validado correctamente con jq
+DEBUG - Enviando petición POST a: http://localhost:4002/api/validate_software
+DEBUG - curl exit code: 0
+DEBUG - curl error: 
+DEBUG - Respuesta del servidor: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en la respuesta
+Software ID: cmbgzmcmv00054lhbygaa50u8, IsApproved: false, IsRejected: false, Mapped Status: pending
+ls: fts_read: Permission denied
+Aplicación TestNewApp2025 añadida a la lista de pendientes con todos los datos
+Resultado de verificación: pending
+TestNewApp2025 sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+Verificando 1 aplicaciones pendientes...
+Manteniendo aplicación válida: TestNewApp2025
+No se encontraron aplicaciones inexistentes que eliminar
+1 aplicaciones pendientes encontradas
+Re-verificando estado de TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+Consultando estado de autorización para TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+DEBUG - Respuesta del servidor para TestNewApp2025: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en check_authorization_status
+DEBUG - isApproved: false, isRejected: false, reason: 
+Software sigue pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestNewApp2025...
+Verificando software: TestNewApp2025 desconocida
+DEBUG - Valores originales para TestNewApp2025:
+DEBUG - app_name: 'TestNewApp2025'
+DEBUG - app_version: 'desconocida'
+DEBUG - app_path: '/Applications/TestNewApp2025.app'
+DEBUG - sha256: 'no_disponible'
+DEBUG - username: 'mistborn'
+DEBUG - device_id: 'SERIAL-KPWKTV5XWY'
+DEBUG - vendor: 'desconocido'
+DEBUG - install_date: '2025-06-03T22:44:57Z'
+DEBUG - is_running: 'false'
+DEBUG - digital_signature: 'false'
+DEBUG - JSON construido para enviar:
+DEBUG - JSON: {
+    "device_id": "SERIAL-KPWKTV5XWY",
+    "user_id": "mistborn",
+    "software_name": "TestNewApp2025",
+    "version": "desconocida",
+    "vendor": "desconocido",
+    "install_date": "2025-06-03T22:44:57Z",
+    "install_path": "/Applications/TestNewApp2025.app",
+    "install_method": "manual",
+    "last_executed": null,
+    "is_running": false,
+    "digital_signature": false,
+    "is_approved": false,
+    "detected_by": "macos_agent",
+    "sha256": "no_disponible",
+    "notes": null}
+DEBUG - JSON validado correctamente con jq
+DEBUG - Enviando petición POST a: http://localhost:4002/api/validate_software
+DEBUG - curl exit code: 0
+DEBUG - curl error: 
+DEBUG - Respuesta del servidor: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8"}
+No se encontró razón detallada de la IA válida en la respuesta
+Software ID: cmbgzmcmv00054lhbygaa50u8, IsApproved: false, IsRejected: false, Mapped Status: pending
+ls: fts_read: Permission denied
+Aplicación TestNewApp2025 añadida a la lista de pendientes con todos los datos
+Resultado de verificación: pending
+TestNewApp2025 sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+Verificando 1 aplicaciones pendientes...
+Manteniendo aplicación válida: TestNewApp2025
+No se encontraron aplicaciones inexistentes que eliminar
+1 aplicaciones pendientes encontradas
+Re-verificando estado de TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+Consultando estado de autorización para TestNewApp2025 (ID: cmbgzmcmv00054lhbygaa50u8)...
+DEBUG - Respuesta del servidor para TestNewApp2025: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8","autorizado":0,"razon":"No se encuentra información pública sobre 'TestNewApp2025'.  La falta de información, versión desconocida y SHA256 no verificable indican un alto riesgo.","isRejected":true}
+No se encontró razón detallada de la IA válida en check_authorization_status
+DEBUG - isApproved: false, isRejected: true, reason: 
+DEBUG - autorizado: 0, razon: No se encuentra información pública sobre 'TestNewApp2025'.  La falta de información, versión desconocida y SHA256 no verificable indican un alto riesgo.
+Autorización completada: RECHAZADO - No se encuentra información pública sobre 'TestNewApp2025'.  La falta de información, versión desconocida y SHA256 no verificable indican un alto riesgo.
+rejected:No se encuentra información pública sobre 'TestNewApp2025'.  La falta de información, versión desconocida y SHA256 no verificable indican un alto riesgo.
+Usando método de re-verificación tradicional para TestNewApp2025...
+Verificando software: TestNewApp2025 desconocida
+DEBUG - Valores originales para TestNewApp2025:
+DEBUG - app_name: 'TestNewApp2025'
+DEBUG - app_version: 'desconocida'
+DEBUG - app_path: '/Applications/TestNewApp2025.app'
+DEBUG - sha256: 'no_disponible'
+DEBUG - username: 'mistborn'
+DEBUG - device_id: 'SERIAL-KPWKTV5XWY'
+DEBUG - vendor: 'desconocido'
+DEBUG - install_date: '2025-06-03T22:44:57Z'
+DEBUG - is_running: 'false'
+DEBUG - digital_signature: 'false'
+DEBUG - JSON construido para enviar:
+DEBUG - JSON: {
+    "device_id": "SERIAL-KPWKTV5XWY",
+    "user_id": "mistborn",
+    "software_name": "TestNewApp2025",
+    "version": "desconocida",
+    "vendor": "desconocido",
+    "install_date": "2025-06-03T22:44:57Z",
+    "install_path": "/Applications/TestNewApp2025.app",
+    "install_method": "manual",
+    "last_executed": null,
+    "is_running": false,
+    "digital_signature": false,
+    "is_approved": false,
+    "detected_by": "macos_agent",
+    "sha256": "no_disponible",
+    "notes": null}
+DEBUG - JSON validado correctamente con jq
+DEBUG - Enviando petición POST a: http://localhost:4002/api/validate_software
+DEBUG - curl exit code: 0
+DEBUG - curl error: 
+DEBUG - Respuesta del servidor: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgzmcmv00054lhbygaa50u8","autorizado":0,"razon":"No se encuentra información pública sobre 'TestNewApp2025'.  La falta de información, versión desconocida y SHA256 no verificable indican un alto riesgo.","isRejected":true}
+No se encontró razón detallada de la IA válida en la respuesta
+Software rechazado por autorización. Razón: No se encuentra información pública sobre 'TestNewApp2025'.  La falta de información, versión desconocida y SHA256 no verificable indican un alto riesgo.
+Software ID: cmbgzmcmv00054lhbygaa50u8, IsApproved: false, IsRejected: true, Mapped Status: rejected
+Resultado de verificación: rejected
+TestNewApp2025 ha sido rechazado. Eliminando...
+Usando razón de la IA sanitizada: No se encuentra información pública sobre 'TestNewApp2025'.  La falta de información, versión desconocida y SHA256 no verificable indican un alto riesgo.
+Intentando mostrar diálogo: Análisis Completado - DENEGADO
+Diálogo mostrado exitosamente: Análisis Completado - DENEGADO
+button returned:OK
+Aplicación eliminada: /Applications/TestNewApp2025.app
+Aplicación TestNewApp2025 eliminada correctamente
+Eliminando cmbgzmcmv00054lhbygaa50u8 de la lista de pendientes...
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
 Sincronizando configuración con el servidor...
 Device ID: SERIAL-KPWKTV5XWY
 Archivo de configuración actualizado
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Ping exitoso: Estado del agente actualizado en el servidor
+Verificando actualizaciones del agente...
+El agente está actualizado
+Próximo ping en 59 segundos...
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Sincronizando configuración con el servidor...
+Device ID: SERIAL-KPWKTV5XWY
+Archivo de configuración actualizado
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
 Ping exitoso: Estado del agente actualizado en el servidor
 Verificando actualizaciones del agente...
 El agente está actualizado
 Próximo ping en 60 segundos...
 Verificando aplicaciones pendientes...
-1 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
-DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Verificación de aplicaciones pendientes completada
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
 Verificando aplicaciones pendientes...
-1 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
-DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Verificación de aplicaciones pendientes completada
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
 Verificando aplicaciones pendientes...
-1 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
-DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Verificación de aplicaciones pendientes completada
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
 Verificando aplicaciones pendientes...
-1 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
-DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Verificación de aplicaciones pendientes completada
-./MacOSInstallAgent.sh: line 1221: 80261 Terminated: 15          ( while true; do
-    local cycle_start=$(date +%s); sync_config_with_server; ping_result=$(ping_server); ping_exit_code=$?; if [ $ping_exit_code -eq 0 ]; then
-        log 1 "Ping exitoso: Estado del agente actualizado en el servidor"; AUTH_FAILURE_TIME=0; AUTH_FAILURE_REPORTED=0;
-    else
-        log 1 "Error en ping: No se pudo actualizar el estado del agente";
-    fi; if [ "$AGENT_AUTO_UPDATE" = "true" ]; then
-        check_for_updates;
-    fi; local cycle_end=$(date +%s); local cycle_duration=$((cycle_end - cycle_start)); local wait_time=$((PING_INTERVAL - cycle_duration)); if [ $wait_time -lt 1 ]; then
-        wait_time=1;
-    fi; log 1 "Próximo ping en $wait_time segundos..."; sleep $wait_time;
-done )
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
 Verificando aplicaciones pendientes...
-1 aplicaciones pendientes encontradas
-Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
-DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
-DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
-Usando método de re-verificación tradicional para Unknown App...
-Verificando software: Unknown App desconocida
-Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
-Aplicación Unknown App añadida a la lista de pendientes
-Resultado de verificación: pending
-Unknown App sigue pendiente de aprobación
-Verificación de aplicaciones pendientes completada
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes
+Verificando aplicaciones pendientes...
+Limpiando aplicaciones inexistentes de la lista de pendientes...
+No hay aplicaciones pendientes que limpiar
+No hay aplicaciones pendientes

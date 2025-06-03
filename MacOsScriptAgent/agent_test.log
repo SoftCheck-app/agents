@@ -1,0 +1,98 @@
+Daemon de sincronización iniciado con PID: 94230
+./MacOSInstallAgent.sh: line 61: [: -gt: unary operator expected
+./MacOSInstallAgent.sh: line 71: [: -gt: unary operator expected
+========================================
+  CONFIGURACIÓN ACTUAL DEL AGENTE
+========================================
+ Status     : active (ACTIVO)
+ Mode       : active (ACTIVO)
+ Device ID  : SERIAL-KPWKTV5XWY
+ Servidor   : http://localhost:4002/api
+ Conexión   : DESCONECTADO
+========================================
+Iniciando monitor de instalaciones...
+Sincronizando configuración con el servidor...
+Device ID: SERIAL-KPWKTV5XWY
+Carpeta de cuarentena configurada: /Users/mistborn/Library/Application Support/AppQuarantine
+Carpeta de configuración configurada: /Users/mistborn/.softcheck
+Archivo de configuración actualizado
+Configuración cargada desde archivo local
+========================================
+  CONFIGURACIÓN ACTUAL DEL AGENTE
+========================================
+ Status     : active (ACTIVO)
+ Mode       : active (ACTIVO)
+Ping exitoso: Estado del agente actualizado en el servidor
+Verificando actualizaciones del agente...
+ Device ID  : SERIAL-KPWKTV5XWY
+ Servidor   : http://localhost:4002/api
+ Conexión   : DESCONECTADO
+========================================
+El agente está actualizado
+Próximo ping en 59 segundos...
+Sincronizando configuración con el servidor...
+Device ID: SERIAL-KPWKTV5XWY
+Archivo de configuración actualizado
+Verificando actualizaciones del agente...
+El agente está actualizado
+Se han detectado 62 aplicaciones iniciales
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmyl6o007a4ljd20h2tbzi","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmylhh007c4ljdko1rn2v3, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmyl6o007a4ljd20h2tbzi","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmylhh007c4ljdko1rn2v3, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmyl6o007a4ljd20h2tbzi","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmylhh007c4ljdko1rn2v3, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmyl6o007a4ljd20h2tbzi","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmylhh007c4ljdko1rn2v3, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada

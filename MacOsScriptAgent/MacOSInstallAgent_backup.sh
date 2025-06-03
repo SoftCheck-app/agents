@@ -17,12 +17,15 @@ BACKEND_URL="http://localhost:4002/api"
 VERIFICATION_ENDPOINT="$BACKEND_URL/validate_software"
 API_KEY="305f98c40f6ab0224759d1725147ca1b"  # Debe coincidir con el valor en la base de datos
 APPS_DIRECTORY="/Applications"
-SCAN_INTERVAL=1  # segundos entre escaneos - verificar aplicaciones pendientes cada 10 segundos
+SCAN_INTERVAL=10  # segundos entre escaneos - verificar aplicaciones pendientes cada 10 segundos
 QUARANTINE_DIR="$HOME/Library/Application Support/AppQuarantine"
 SETTINGS_ENDPOINT="$BACKEND_URL/settings"  # Endpoint para obtener ajustes
 STATUS_ENDPOINT="$BACKEND_URL/agents/status"
 PING_ENDPOINT="$BACKEND_URL/agents/ping"  # Endpoint para enviar pings
 SOFTWARE_STATUS_ENDPOINT="$BACKEND_URL/software/status"  # Endpoint para verificar estado de aprobación
+
+# Archivo PID para evitar múltiples instancias
+PID_FILE="$HOME/.softcheck/agent.pid"
 
 # Configuración del agente
 AGENT_STATUS="active"      # active/inactive - Determina si el agente está funcionando
@@ -39,40 +42,6 @@ RETRY_INTERVAL=300 # 5 minutos entre reintentos de verificación después de un 
 AUTH_FAILURE_TIME=0 # Tiempo del último fallo de autenticación
 AUTH_FAILURE_REPORTED=0 # Para evitar mensajes repetitivos
 LAST_STATUS_NOTIFICATION=0 # Tiempo de la última notificación de estado
-
-# Variables globales para almacenar información de la IA
-LAST_IA_REASON=""
-LAST_IA_DETAILED_REASON=""
-
-# Variable para controlar el último tiempo de sincronización exitosa
-LAST_SYNC_TIME=0
-
-# Función para sanitizar texto de la IA para mostrar en diálogos
-sanitize_ia_text() {
-  local text="$1"
-  
-  # Si el texto está vacío o es null, retornar vacío
-  if [ -z "$text" ] || [ "$text" = "null" ]; then
-    echo ""
-    return
-  fi
-  
-  # Limpiar caracteres problemáticos y limitiar longitud
-  # Quitar comillas dobles problemáticas y saltos de línea literales
-  local clean_text=$(echo "$text" | sed 's/\\n/ /g' | sed 's/\\"/"/g' | sed 's/^"//g' | sed 's/"$//g')
-  
-  # Limitar longitud del mensaje para evitar diálogos muy largos (máximo 500 caracteres)
-  if [ ${#clean_text} -gt 500 ]; then
-    clean_text="${clean_text:0:497}..."
-  fi
-  
-  # Si el texto sigue vacío después de la limpieza, usar mensaje por defecto
-  if [ -z "$clean_text" ]; then
-    echo "No se proporcionó información adicional"
-  else
-    echo "$clean_text"
-  fi
-}
 
 # Función para imprimir mensajes de log según el nivel de verbosidad
 log() {
@@ -531,17 +500,6 @@ verify_software() {
       local auth_status=$(echo "$response" | jq -r '.authorizationStatus // ""')
       local auth_result=$(echo "$response" | jq -r '.authorizationResult // ""')
       
-      # Capturar razón detallada de la IA si está disponible
-      local razon_de_la_IA=$(echo "$response" | jq -r '.razon_de_la_IA // ""')
-      if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
-        LAST_IA_DETAILED_REASON="$razon_de_la_IA"
-        log 2 "Razón detallada de la IA capturada: '$razon_de_la_IA'"
-        log 2 "Longitud de la razón de la IA: ${#razon_de_la_IA} caracteres"
-      else
-        log 2 "No se encontró razón detallada de la IA válida en la respuesta"
-        LAST_IA_DETAILED_REASON=""
-      fi
-      
       # Verificar si hay información de autorización en la respuesta
       if [[ "$response" == *"autorizado"* ]]; then
         local autorizado=$(echo "$response" | jq -r '.autorizado // null')
@@ -549,30 +507,23 @@ verify_software() {
           status="rejected"
           if [[ "$response" == *"razon"* ]]; then
             rejection_reason=$(echo "$response" | jq -r '.razon // "No cumple con las políticas de seguridad"')
-            LAST_IA_REASON="$rejection_reason"
           fi
           log 2 "Software rechazado por autorización. Razón: $rejection_reason"
         elif [ "$autorizado" = "1" ] || [ "$autorizado" = "true" ]; then
           status="approved"
-          if [[ "$response" == *"razon"* ]]; then
-            local approval_reason=$(echo "$response" | jq -r '.razon // "Software verificado correctamente"')
-            LAST_IA_REASON="$approval_reason"
-          fi
           log 2 "Software aprobado por autorización"
         else
           status="pending"
         fi
       else
         # Detectar si fue explícitamente rechazada por otros medios
-      if [ "$is_approved" = "true" ]; then
-        status="approved"
-          LAST_IA_REASON="$rejection_reason"
+        if [ "$is_approved" = "true" ]; then
+          status="approved"
         elif [ "$is_rejected" = "true" ] || [ -n "$rejection_reason" ] || [[ "$response" == *"\"rejected\""* ]]; then
           status="rejected"
-          LAST_IA_REASON="$rejection_reason"
           log 2 "Software rechazado. Razón: $rejection_reason"
-      else
-        status="pending"
+        else
+          status="pending"
         fi
       fi
       
@@ -677,7 +628,7 @@ check_pending_applications() {
   
   # Si hay aplicaciones pendientes, mostrar notificación de estado cada 30 segundos
   if [ "$count" -gt 0 ]; then
-  local now=$(date +%s)
+    local now=$(date +%s)
     # Verificar si han pasado 30 segundos desde la última notificación de estado
     if [ -z "$LAST_STATUS_NOTIFICATION" ] || [ $((now - LAST_STATUS_NOTIFICATION)) -ge 30 ]; then
       show_notification "Verificación en Proceso" "Analizando $count aplicación(es)... El proceso puede tardar hasta 20 segundos"
@@ -707,28 +658,10 @@ check_pending_applications() {
       auth_status_result=$(check_authorization_status "$software_id" "$app_name")
       
       # Procesar resultado de la consulta de autorización
-      if [[ "$auth_status_result" == "approved"* ]]; then
+      if [[ "$auth_status_result" == "approved" ]]; then
         # Software aprobado
         log 1 "$app_name ha sido aprobado. Restaurando permisos de ejecución..."
-        
-        # Extraer razón si está incluida en el resultado
-        local ia_reason=""
-        if [[ "$auth_status_result" == *":"* ]]; then
-          ia_reason="${auth_status_result#approved:}"
-          # Sanitizar la razón obtenida
-          ia_reason=$(sanitize_ia_text "$ia_reason")
-        fi
-        
-        # Construir mensaje con razón de la IA si está disponible
-        local approval_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales."
-        
-        if [ -n "$ia_reason" ] && [ "$ia_reason" != "null" ]; then
-          approval_message="$approval_message\n\nAnálisis de la IA: $ia_reason"
-        fi
-        
-        approval_message="$approval_message\n\nSe están restaurando los permisos de ejecución."
-        
-        show_dialog "Análisis Completado - APROBADO" "$approval_message" "note"
+        show_dialog "Análisis Completado - APROBADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales. Se están restaurando los permisos de ejecución." "note"
         
         if restore_app_execution "$app_path"; then
           log 1 "Permisos restaurados para $app_name"
@@ -737,25 +670,16 @@ check_pending_applications() {
         else
           show_dialog "Error de Restauración" "El software $app_name ha sido aprobado, pero hubo un problema al restaurar sus permisos." "stop"
         fi
-      continue
+        continue
       elif [[ "$auth_status_result" == rejected:* ]]; then
         # Software rechazado
         local rejection_reason="${auth_status_result#rejected:}"
-        if [ -z "$rejection_reason" ] || [ "$rejection_reason" = "null" ]; then
+        if [ -z "$rejection_reason" ]; then
           rejection_reason="No cumple con las políticas de seguridad"
-        else
-          # Sanitizar la razón obtenida del resultado de autorización
-          rejection_reason=$(sanitize_ia_text "$rejection_reason")
-          if [ -z "$rejection_reason" ]; then
-            rejection_reason="No cumple con las políticas de seguridad"
-          fi
         fi
         
         log 1 "$app_name ha sido rechazado. Eliminando..."
-        
-        local denial_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad."
-        
-        show_dialog "Análisis Completado - DENEGADO" "$denial_message" "stop"
+        show_dialog "Análisis Completado - DENEGADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad." "stop"
         
         if delete_application "$app_path"; then
           log 1 "Aplicación $app_name eliminada correctamente"
@@ -768,7 +692,7 @@ check_pending_applications() {
       elif [[ "$auth_status_result" == "pending" ]]; then
         # Aún pendiente
         log 2 "$app_name sigue pendiente de autorización"
-      continue
+        continue
       fi
     fi
     
@@ -793,25 +717,7 @@ check_pending_applications() {
     if [ $verification_result -eq 0 ]; then
       # Software aprobado
       log 1 "$app_name ha sido aprobado. Restaurando permisos de ejecución..."
-      
-      # Construir mensaje con razón de la IA si está disponible
-      local approval_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales."
-      
-      if [ -n "$LAST_IA_DETAILED_REASON" ] && [ "$LAST_IA_DETAILED_REASON" != "null" ]; then
-        local ia_analysis=$(sanitize_ia_text "$LAST_IA_DETAILED_REASON")
-        if [ -n "$ia_analysis" ]; then
-          approval_message="$approval_message\n\nAnálisis de la IA: $ia_analysis"
-        fi
-      elif [ -n "$LAST_IA_REASON" ] && [ "$LAST_IA_REASON" != "null" ]; then
-        local ia_evaluation=$(sanitize_ia_text "$LAST_IA_REASON")
-        if [ -n "$ia_evaluation" ]; then
-          approval_message="$approval_message\n\nEvaluación: $ia_evaluation"
-        fi
-      fi
-      
-      approval_message="$approval_message\n\nSe están restaurando los permisos de ejecución."
-      
-      show_dialog "Análisis Completado - APROBADO" "$approval_message" "note"
+      show_dialog "Análisis Completado - APROBADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales. Se están restaurando los permisos de ejecución." "note"
       
       if restore_app_execution "$app_path"; then
         log 1 "Permisos restaurados para $app_name"
@@ -824,24 +730,12 @@ check_pending_applications() {
       # Software rechazado
       log 1 "$app_name ha sido rechazado. Eliminando..."
       
-      # Usar la razón de la IA si está disponible y sanitizarla
       local rejection_reason="No cumple con las políticas de seguridad"
-      if [ -n "$LAST_IA_DETAILED_REASON" ] && [ "$LAST_IA_DETAILED_REASON" != "null" ]; then
-        rejection_reason=$(sanitize_ia_text "$LAST_IA_DETAILED_REASON")
-        log 2 "Usando razón detallada de la IA sanitizada: $rejection_reason"
-      elif [ -n "$LAST_IA_REASON" ] && [ "$LAST_IA_REASON" != "null" ]; then
-        rejection_reason=$(sanitize_ia_text "$LAST_IA_REASON")
-        log 2 "Usando razón de la IA sanitizada: $rejection_reason"
+      if [[ "$response" == *"\"reason\""* ]] && command -v jq &> /dev/null; then
+        rejection_reason=$(echo "$response" | jq -r '.reason // "No cumple con las políticas de seguridad"')
       fi
       
-      # Verificar que el rejection_reason no esté vacío después de la sanitización
-      if [ -z "$rejection_reason" ]; then
-        rejection_reason="No cumple con las políticas de seguridad"
-      fi
-      
-      local denial_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad."
-      
-      show_dialog "Análisis Completado - DENEGADO" "$denial_message" "stop"
+      show_dialog "Análisis Completado - DENEGADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad." "stop"
       
       if delete_application "$app_path"; then
         log 1 "Aplicación $app_name eliminada correctamente"
@@ -1102,68 +996,27 @@ process_new_application() {
   verification_result=$?
   
   if [ $verification_result -eq 0 ]; then
-    # Software aprobado
-    log 1 "$app_name ha sido aprobado. Restaurando permisos de ejecución..."
-    
-    # Construir mensaje con razón de la IA si está disponible
-    local approval_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales."
-    
-    if [ -n "$LAST_IA_DETAILED_REASON" ] && [ "$LAST_IA_DETAILED_REASON" != "null" ]; then
-      local ia_analysis=$(sanitize_ia_text "$LAST_IA_DETAILED_REASON")
-      if [ -n "$ia_analysis" ]; then
-        approval_message="$approval_message\n\nAnálisis de la IA: $ia_analysis"
-      fi
-    elif [ -n "$LAST_IA_REASON" ] && [ "$LAST_IA_REASON" != "null" ]; then
-      local ia_evaluation=$(sanitize_ia_text "$LAST_IA_REASON")
-      if [ -n "$ia_evaluation" ]; then
-        approval_message="$approval_message\n\nEvaluación: $ia_evaluation"
-      fi
+    # Software aprobado inmediatamente (whitelist)
+    log 1 "$app_name ha sido aprobado inmediatamente. Restaurando permisos de ejecución"
+    show_dialog "Análisis Completado - APROBADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales. Se están restaurando los permisos de ejecución." "note"
+    restore_app_execution "$app_path"
+    show_notification "Software Aprobado" "$app_name está listo para usar"
+  elif [ $verification_result -eq 2 ]; then
+    # Software rechazado inmediatamente (blacklist)
+    log 1 "$app_name ha sido rechazado inmediatamente. Eliminando"
+    local reason="No cumple con las políticas de seguridad"
+    if [[ "$response" == *"\"reason\""* ]] && command -v jq &> /dev/null; then
+      reason=$(echo "$response" | jq -r '.reason // "No cumple con las políticas de seguridad"')
     fi
-    
-    approval_message="$approval_message\n\nSe están restaurando los permisos de ejecución."
-    
-    show_dialog "Análisis Completado - APROBADO" "$approval_message" "note"
-    
-    if restore_app_execution "$app_path"; then
-      log 1 "Permisos restaurados para $app_name"
-      show_notification "Software Aprobado" "$app_name está listo para usar"
-      apps_to_remove+=("$software_id")
-    else
-      show_dialog "Error de Restauración" "El software $app_name ha sido aprobado, pero hubo un problema al restaurar sus permisos." "stop"
+    show_dialog "Análisis Completado - DENEGADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad." "stop"
+    delete_application "$app_path"
+    show_notification "Software Eliminado" "$app_name ha sido eliminado por seguridad"
+  else
+    # Software pendiente - añadir a lista para verificación periódica
+    log 1 "$app_name necesita aprobación. Añadiendo a lista de verificación cada 10 segundos"
+    if [ -n "$software_id" ]; then
+      add_to_pending_list "$app_name" "$app_version" "$app_path" "$software_id"
     fi
-    elif [ $verification_result -eq 2 ]; then
-    # Software rechazado
-    log 1 "$app_name ha sido rechazado. Eliminando..."
-    
-    # Usar la razón de la IA si está disponible y sanitizarla
-    local rejection_reason="No cumple con las políticas de seguridad"
-    if [ -n "$LAST_IA_DETAILED_REASON" ] && [ "$LAST_IA_DETAILED_REASON" != "null" ]; then
-      rejection_reason=$(sanitize_ia_text "$LAST_IA_DETAILED_REASON")
-      log 2 "Usando razón detallada de la IA sanitizada: $rejection_reason"
-    elif [ -n "$LAST_IA_REASON" ] && [ "$LAST_IA_REASON" != "null" ]; then
-      rejection_reason=$(sanitize_ia_text "$LAST_IA_REASON")
-      log 2 "Usando razón de la IA sanitizada: $rejection_reason"
-    fi
-    
-    # Verificar que el rejection_reason no esté vacío después de la sanitización
-    if [ -z "$rejection_reason" ]; then
-      rejection_reason="No cumple con las políticas de seguridad"
-    fi
-    
-    local denial_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad."
-    
-    show_dialog "Análisis Completado - DENEGADO" "$denial_message" "stop"
-    
-      if delete_application "$app_path"; then
-        log 1 "Aplicación $app_name eliminada correctamente"
-      show_notification "Software Eliminado" "$app_name ha sido eliminado por seguridad"
-      apps_to_remove+=("$software_id")
-      else
-      show_dialog "Error de Eliminación" "El software $app_name ha sido rechazado, pero hubo un problema al eliminarlo." "stop"
-      fi
-    else
-    # Software aún pendiente
-    log 2 "$app_name sigue pendiente de aprobación"
   fi
 }
 
@@ -1191,8 +1044,8 @@ check_authorization_status() {
     -d "$minimal_json" \
     "$VERIFICATION_ENDPOINT" 2>/dev/null)
   
-  # DEBUG: Mostrar la respuesta completa para debugging
-  log 2 "DEBUG - Respuesta del servidor para $app_name: $status_response"
+  # DEBUG: Mostrar respuesta cruda para debugging
+  log 1 "DEBUG: Respuesta cruda del servidor para $app_name: $status_response"
   
   # Analizar respuesta para detectar estado actualizado
   if command -v jq &> /dev/null && echo "$status_response" | jq empty 2>/dev/null; then
@@ -1200,42 +1053,18 @@ check_authorization_status() {
     local is_rejected=$(echo "$status_response" | jq -r '.isRejected // false')
     local rejection_reason=$(echo "$status_response" | jq -r '.reason // ""')
     
-    # Capturar razón detallada de la IA si está disponible
-    local razon_de_la_IA=$(echo "$status_response" | jq -r '.razon_de_la_IA // ""')
-    if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
-      LAST_IA_DETAILED_REASON="$razon_de_la_IA"
-      log 2 "Razón detallada de la IA capturada en check_authorization_status: '$razon_de_la_IA'"
-      log 2 "Longitud de la razón de la IA: ${#razon_de_la_IA} caracteres"
-    else
-      log 2 "No se encontró razón detallada de la IA válida en check_authorization_status"
-    fi
-    
-    log 2 "DEBUG - isApproved: $is_approved, isRejected: $is_rejected, reason: $rejection_reason"
-    
     # Buscar indicadores de autorización en la respuesta
     if [[ "$status_response" == *"autorizado"* ]]; then
       local autorizado=$(echo "$status_response" | jq -r '.autorizado // null')
       local razon=$(echo "$status_response" | jq -r '.razon // ""')
       
-      log 2 "DEBUG - autorizado: $autorizado, razon: $razon"
-      
       if [ "$autorizado" = "0" ] || [ "$autorizado" = "false" ]; then
         log 2 "Autorización completada: RECHAZADO - $razon"
-        # Usar razon_de_la_IA si está disponible, sino usar razon normal
-        local final_reason="$razon"
-        if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
-          final_reason="$razon_de_la_IA"
-        fi
-        echo "rejected:$final_reason"
+        echo "rejected:$razon"
         return 0
       elif [ "$autorizado" = "1" ] || [ "$autorizado" = "true" ]; then
         log 2 "Autorización completada: APROBADO"
-        # Usar razon_de_la_IA si está disponible, sino usar razon normal
-        local final_reason="$razon"
-        if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
-          final_reason="$razon_de_la_IA"
-        fi
-        echo "approved:$final_reason"
+        echo "approved"
         return 0
       fi
     fi
@@ -1243,23 +1072,17 @@ check_authorization_status() {
     # Verificar si el estado cambió en la base de datos
     if [ "$is_approved" = "true" ]; then
       log 2 "Software aprobado en base de datos"
-      # Usar razon_de_la_IA si está disponible
-      local final_reason="Software verificado correctamente"
-      if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
-        final_reason="$razon_de_la_IA"
-      fi
-      echo "approved:$final_reason"
+      echo "approved"
       return 0
     elif [ "$is_rejected" = "true" ] || [ -n "$rejection_reason" ]; then
       log 2 "Software rechazado en base de datos: $rejection_reason"
-      # Usar razon_de_la_IA si está disponible, sino usar rejection_reason
-      local final_reason="$rejection_reason"
-      if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
-        final_reason="$razon_de_la_IA"
-      fi
-      echo "rejected:$final_reason"
+      echo "rejected:$rejection_reason"
       return 0
     fi
+    
+    log 2 "Software aún pendiente de autorización"
+    echo "pending"
+    return 0
   else
     log 1 "Error al consultar estado de autorización: respuesta inválida"
     echo "error"
@@ -1290,17 +1113,17 @@ check_software_database() {
   if command -v jq &> /dev/null; then
     # Verificar si la respuesta es un JSON válido antes de procesarla
     if echo "$response" | jq empty 2>/dev/null; then
-    # Extraer información relevante
-    local exists=$(echo "$response" | jq -r '.exists // false')
-    local software_id=$(echo "$response" | jq -r '.softwareId // ""')
-    local status=$(echo "$response" | jq -r '.status // "unknown"')
-    
-    if [ "$exists" = "true" ] && [ -n "$software_id" ]; then
-      log 2 "Software encontrado en la base de datos. ID: $software_id, Estado: $status"
-      return 0
-    else
-      log 2 "Software no encontrado en la base de datos"
-      return 1
+      # Extraer información relevante
+      local exists=$(echo "$response" | jq -r '.exists // false')
+      local software_id=$(echo "$response" | jq -r '.softwareId // ""')
+      local status=$(echo "$response" | jq -r '.status // "unknown"')
+      
+      if [ "$exists" = "true" ] && [ -n "$software_id" ]; then
+        log 2 "Software encontrado en la base de datos. ID: $software_id, Estado: $status"
+        return 0
+      else
+        log 2 "Software no encontrado en la base de datos"
+        return 1
       fi
     else
       log 1 "Error: Respuesta del servidor no es JSON válido: $response"
@@ -1553,7 +1376,7 @@ restrict_app_execution() {
     log 1 "ADVERTENCIA: No se encontró ejecutable principal"
   fi
   
-  # Guardar atributos extendidos
+ # Guardar atributos extendidos
   xattr -l "$app_path" > "${metadata_dir}/app_xattr" 2>/dev/null
   
   # Quitar permisos de ejecución de archivos en MacOS
@@ -1654,10 +1477,60 @@ restore_app_execution() {
   return 0
 }
 
+# Función para verificar y crear lock de instancia única
+check_single_instance() {
+  # Crear directorio de configuración si no existe
+  mkdir -p "$(dirname "$PID_FILE")"
+  
+  # Verificar si ya existe un archivo PID
+  if [ -f "$PID_FILE" ]; then
+    local existing_pid=$(cat "$PID_FILE")
+    
+    # Verificar si el proceso existe y es realmente nuestro agente
+    if ps -p "$existing_pid" > /dev/null 2>&1; then
+      local process_name=$(ps -p "$existing_pid" -o comm= 2>/dev/null)
+      if [[ "$process_name" == *"MacOSInstallAgent"* ]] || [[ "$process_name" == *"bash"* ]]; then
+        log 1 "ERROR: Ya hay una instancia del agente ejecutándose (PID: $existing_pid)"
+        log 1 "Si está seguro de que no hay otra instancia, elimine el archivo: $PID_FILE"
+        exit 1
+      else
+        # El proceso existe pero no es nuestro agente, limpiar PID obsoleto
+        log 2 "Limpiando PID obsoleto de otro proceso"
+        rm -f "$PID_FILE"
+      fi
+    else
+      # El proceso no existe, limpiar PID obsoleto
+      log 2 "Limpiando PID obsoleto"
+      rm -f "$PID_FILE"
+    fi
+  fi
+  
+  # Escribir nuestro PID al archivo
+  echo $$ > "$PID_FILE"
+  log 2 "Instancia única establecida (PID: $$)"
+  
+  # Configurar limpieza al salir
+  trap cleanup_pid_file EXIT TERM INT
+}
+
+# Función para limpiar el archivo PID al salir
+cleanup_pid_file() {
+  if [ -f "$PID_FILE" ]; then
+    local current_pid=$(cat "$PID_FILE" 2>/dev/null)
+    if [ "$current_pid" = "$$" ]; then
+      rm -f "$PID_FILE"
+      log 2 "Archivo PID limpiado"
+    fi
+  fi
+}
+
 # --- Iniciar el agente ---
 # Establecer hora de inicio para sincronización más precisa
 SYNC_START_TIME=$(date +%s)
 PING_INTERVAL=60  # Intervalo de ping en segundos
+
+# Verificar que solo haya una instancia del agente ejecutándose
+check_single_instance
 
 # Iniciar el daemon de sincronización
 start_sync_daemon

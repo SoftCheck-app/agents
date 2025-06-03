@@ -1,0 +1,298 @@
+Daemon de sincronización iniciado con PID: 80261
+./MacOSInstallAgent.sh: line 61: [: -gt: unary operator expected
+./MacOSInstallAgent.sh: line 71: [: -gt: unary operator expected
+========================================
+  CONFIGURACIÓN ACTUAL DEL AGENTE
+========================================
+ Status     : active (ACTIVO)
+ Mode       : active (ACTIVO)
+ Device ID  : SERIAL-KPWKTV5XWY
+ Servidor   : http://localhost:4002/api
+ Conexión   : DESCONECTADO
+========================================
+Iniciando monitor de instalaciones...
+Sincronizando configuración con el servidor...
+Device ID: SERIAL-KPWKTV5XWY
+Carpeta de cuarentena configurada: /Users/mistborn/Library/Application Support/AppQuarantine
+Carpeta de configuración configurada: /Users/mistborn/.softcheck
+Configuración cargada desde archivo local
+========================================
+  CONFIGURACIÓN ACTUAL DEL AGENTE
+========================================
+ Status     : active (ACTIVO)
+ Mode       : active (ACTIVO)
+Archivo de configuración actualizado
+ Device ID  : SERIAL-KPWKTV5XWY
+ Servidor   : http://localhost:4002/api
+ Conexión   : DESCONECTADO
+========================================
+Sincronizando configuración con el servidor...
+Device ID: SERIAL-KPWKTV5XWY
+Ping exitoso: Estado del agente actualizado en el servidor
+Verificando actualizaciones del agente...
+Archivo de configuración actualizado
+Verificando actualizaciones del agente...
+El agente está actualizado
+El agente está actualizado
+Próximo ping en 60 segundos...
+Se han detectado 60 aplicaciones iniciales
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software registered successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02"}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Nueva aplicación detectada: TestApp2.app
+Modo activo. Restringiendo ejecución de TestApp2 temporalmente
+Restringiendo permisos de ejecución para: /Applications/TestApp2.app
+Contenido del directorio MacOS:
+  total 0
+  drwxr-xr-x@ 2 mistborn  admin   64 Jun  3 16:47 .
+  drwxr-xr-x@ 4 mistborn  admin  128 Jun  3 16:47 ..
+Guardando permisos originales de ejecutables en MacOS...
+ADVERTENCIA: No se encontró ejecutable principal
+Quitando permisos de ejecución a archivos en MacOS...
+Permisos restringidos para: /Applications/TestApp2.app
+Mostrando diálogo de verificación de seguridad para TestApp2...
+Intentando mostrar diálogo: Proceso de Verificación de Seguridad
+Diálogo mostrado exitosamente: Proceso de Verificación de Seguridad
+button returned:OK
+Diálogo de verificación mostrado para TestApp2
+Enviando TestApp2 al servidor para verificación...
+Verificando software: TestApp2 desconocida
+Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación TestApp2 añadida a la lista de pendientes
+Resultado de verificación: pending
+TestApp2 necesita aprobación. Añadiendo a lista de verificación cada 10 segundos
+Aplicación TestApp2 añadida a la lista de pendientes
+Verificando aplicaciones pendientes...
+3 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Re-verificando estado de TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
+Consultando estado de autorización para TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
+DEBUG - Respuesta del servidor para TestApp2: {"success":true,"message":"Software registered successfully","isApproved":false,"softwareId":"cmbgmvht300784ljdjbo5e3jr"}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestApp2...
+Verificando software: TestApp2 desconocida
+Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación TestApp2 añadida a la lista de pendientes
+Resultado de verificación: pending
+TestApp2 sigue pendiente de aprobación
+Re-verificando estado de TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
+Consultando estado de autorización para TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
+DEBUG - Respuesta del servidor para TestApp2: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmvht300784ljdjbo5e3jr","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestApp2...
+Verificando software: TestApp2 desconocida
+Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación TestApp2 añadida a la lista de pendientes
+Resultado de verificación: pending
+TestApp2 sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+3 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
+DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Re-verificando estado de TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
+Consultando estado de autorización para TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
+DEBUG - Respuesta del servidor para TestApp2: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmvht300784ljdjbo5e3jr","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestApp2...
+Verificando software: TestApp2 desconocida
+Software rechazado por autorización. Razón: No se pudo encontrar información sobre 'TestApp2'.  Versión y SHA256 desconocidos impiden evaluar el riesgo con precisión.  Ausencia de información incrementa la incertidumbre y por lo tanto el riesgo.
+Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: true, Mapped Status: rejected
+Razón detallada: No se pudo encontrar información sobre 'TestApp2'.  Versión y SHA256 desconocidos impiden evaluar el riesgo con precisión.  Ausencia de información incrementa la incertidumbre y por lo tanto el riesgo.
+Resultado de verificación: rejected
+TestApp2 ha sido rechazado. Eliminando...
+Intentando mostrar diálogo: Análisis Completado - DENEGADO
+Diálogo mostrado exitosamente: Análisis Completado - DENEGADO
+button returned:OK
+Aplicación eliminada: /Applications/TestApp2.app
+Aplicación TestApp2 eliminada correctamente
+Re-verificando estado de TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
+Consultando estado de autorización para TestApp2 (ID: cmbgmv9je00764ljd8ihag2id)...
+DEBUG - Respuesta del servidor para TestApp2: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmvht300784ljdjbo5e3jr","notes":null}
+DEBUG - isApproved: false, isRejected: false, reason: , notes: 
+Software aún pendiente de autorización
+pending
+Usando método de re-verificación tradicional para TestApp2...
+Verificando software: TestApp2 desconocida
+Software rechazado por autorización. Razón: No se pudo encontrar información sobre 'TestApp2'.  Versión y SHA256 desconocidos impiden evaluar el riesgo con precisión.  Ausencia de información incrementa la incertidumbre y por lo tanto el riesgo.
+Software ID: cmbgmv9je00764ljd8ihag2id, IsApproved: false, IsRejected: true, Mapped Status: rejected
+Razón detallada: No se pudo encontrar información sobre 'TestApp2'.  Versión y SHA256 desconocidos impiden evaluar el riesgo con precisión.  Ausencia de información incrementa la incertidumbre y por lo tanto el riesgo.
+Resultado de verificación: rejected
+TestApp2 ha sido rechazado. Eliminando...
+Intentando mostrar diálogo: Análisis Completado - DENEGADO
+Diálogo mostrado exitosamente: Análisis Completado - DENEGADO
+button returned:OK
+Aplicación eliminada (método alternativo): /Applications/TestApp2.app
+Aplicación TestApp2 eliminada correctamente
+Eliminando cmbgmv9je00764ljd8ihag2id de la lista de pendientes...
+Eliminando cmbgmv9je00764ljd8ihag2id de la lista de pendientes...
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
+DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Sincronizando configuración con el servidor...
+Device ID: SERIAL-KPWKTV5XWY
+Archivo de configuración actualizado
+Ping exitoso: Estado del agente actualizado en el servidor
+Verificando actualizaciones del agente...
+El agente está actualizado
+Próximo ping en 60 segundos...
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
+DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
+DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
+DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
+DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada
+./MacOSInstallAgent.sh: line 1221: 80261 Terminated: 15          ( while true; do
+    local cycle_start=$(date +%s); sync_config_with_server; ping_result=$(ping_server); ping_exit_code=$?; if [ $ping_exit_code -eq 0 ]; then
+        log 1 "Ping exitoso: Estado del agente actualizado en el servidor"; AUTH_FAILURE_TIME=0; AUTH_FAILURE_REPORTED=0;
+    else
+        log 1 "Error en ping: No se pudo actualizar el estado del agente";
+    fi; if [ "$AGENT_AUTO_UPDATE" = "true" ]; then
+        check_for_updates;
+    fi; local cycle_end=$(date +%s); local cycle_duration=$((cycle_end - cycle_start)); local wait_time=$((PING_INTERVAL - cycle_duration)); if [ $wait_time -lt 1 ]; then
+        wait_time=1;
+    fi; log 1 "Próximo ping en $wait_time segundos..."; sleep $wait_time;
+done )
+Verificando aplicaciones pendientes...
+1 aplicaciones pendientes encontradas
+Re-verificando estado de Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+Consultando estado de autorización para Unknown App (ID: cmbgkmn2d00644ljd3gnsgs60)...
+DEBUG - Respuesta del servidor para Unknown App: {"success":true,"message":"Software updated successfully","isApproved":false,"softwareId":"cmbgmuwx700724ljd0160yy02","autorizado":0,"razon":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","razon_de_la_IA":"Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.","isRejected":true,"notes":"DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información."}
+DEBUG - isApproved: false, isRejected: true, reason: , notes: DENIED: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+DEBUG - autorizado: 0, razon_detallada: Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Autorización completada: RECHAZADO - Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+rejected:Imposible evaluar 'Unknown App vunknown'.  Nombre y versión desconocidos impiden cualquier análisis de seguridad, CVEs o historial.  Se asume máximo riesgo por falta de información.
+Usando método de re-verificación tradicional para Unknown App...
+Verificando software: Unknown App desconocida
+Software ID: cmbgmux6n00744ljdedb39f1a, IsApproved: false, IsRejected: false, Mapped Status: pending
+Aplicación Unknown App añadida a la lista de pendientes
+Resultado de verificación: pending
+Unknown App sigue pendiente de aprobación
+Verificación de aplicaciones pendientes completada

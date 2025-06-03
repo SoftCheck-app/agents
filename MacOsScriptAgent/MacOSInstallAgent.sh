@@ -1603,7 +1603,7 @@ run_monitor() {
   
   # Variables para controlar el estado del monitor
   local monitoring_active=true
-  local initial_apps=""
+  local last_scan_apps=""
   
   # Mostrar notificación de inicio
   # show_notification "Monitor de Instalaciones" "Monitor de instalaciones iniciado"
@@ -1619,39 +1619,40 @@ run_monitor() {
       log 1 "Agente reactivado. Retomando monitorización"
       monitoring_active=true
       # show_notification "Monitor de Instalaciones" "Agente reactivado en modo $AGENT_MODE"
-      # Reinicializar la lista de aplicaciones para evitar alertas de aplicaciones instaladas durante inactividad
-      initial_apps=$(get_current_apps)
+      # Reinicializar la lista de aplicaciones para detectar cambios durante inactividad
+      last_scan_apps=""
     fi
     
     # Si el agente está activo, realizar el monitoreo normal
     if [ "$monitoring_active" = "true" ]; then
-      # Si es la primera ejecución, inicializar la lista de aplicaciones
-      if [ -z "$initial_apps" ]; then
-        initial_apps=$(get_current_apps)
-        log 1 "Se han detectado $(echo "$initial_apps" | wc -l | tr -d ' ') aplicaciones iniciales"
-      fi
-      
       # Verificar aplicaciones pendientes
       check_pending_applications
       
       # Obtener lista actual de aplicaciones
       local current_apps=$(get_current_apps)
       
-      # Buscar nuevas aplicaciones
-      while IFS= read -r app; do
-        if [ -n "$app" ] && ! app_exists "$app" "$initial_apps"; then
-          log 1 "Nueva aplicación detectada: $app"
-          
-          # Extraer nombre sin extensión .app
-          local app_name="${app%.app}"
-          
-          # Procesar la nueva aplicación
-          process_new_application "$app_name" "$APPS_DIRECTORY/$app"
-          
-          # Actualizar lista de aplicaciones conocidas
-          initial_apps=$(echo -e "$initial_apps\n$app")
-        fi
-      done < <(echo "$current_apps")
+      # En el primer escaneo, solo inicializar la lista sin procesar
+      if [ -z "$last_scan_apps" ]; then
+        last_scan_apps="$current_apps"
+        log 1 "Se han detectado $(echo "$current_apps" | wc -l | tr -d ' ') aplicaciones en el primer escaneo"
+      else
+        # Buscar aplicaciones que NO estaban en el escaneo anterior
+        # Esto detecta nuevas instalaciones (incluyendo reinstalaciones)
+        while IFS= read -r app; do
+          if [ -n "$app" ] && ! app_exists "$app" "$last_scan_apps"; then
+            log 1 "Nueva instalación detectada: $app"
+            
+            # Extraer nombre sin extensión .app
+            local app_name="${app%.app}"
+            
+            # SIEMPRE procesar la aplicación - cada instalación pasa por verificación
+            process_new_application "$app_name" "$APPS_DIRECTORY/$app"
+          fi
+        done < <(echo "$current_apps")
+        
+        # Actualizar lista del último escaneo
+        last_scan_apps="$current_apps"
+      fi
       
       # Esperar antes del siguiente escaneo (intervalo normal para monitoreo activo)
       sleep $SCAN_INTERVAL

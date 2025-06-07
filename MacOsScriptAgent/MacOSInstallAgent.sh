@@ -218,16 +218,24 @@ sync_config_with_server() {
   
   # Verificar si obtuvo respuesta válida JSON con isActive
   if [[ "$response" == *"\"isActive\""* ]]; then
-    # Extraer valores del JSON (requiere jq instalado)
-    if command -v jq &> /dev/null; then
-      local isActive=$(echo "$response" | jq -r '.isActive')
-      local isActiveMode=$(echo "$response" | jq -r '.isActiveMode')
-      local autoUpdate=$(echo "$response" | jq -r '.autoUpdate')
-      
-      # Guardar configuración anterior para comparar cambios
-      local previous_status="$AGENT_STATUS"
-      local previous_mode="$AGENT_MODE"
-      local previous_auto_update="$AGENT_AUTO_UPDATE"
+          # Extraer valores del JSON (requiere jq instalado)
+      if command -v jq &> /dev/null; then
+        local isActive=$(echo "$response" | jq -r '.isActive')
+        local isActiveMode=$(echo "$response" | jq -r '.isActiveMode')
+        local autoUpdate=$(echo "$response" | jq -r '.autoUpdate')
+        local shouldDelete=$(echo "$response" | jq -r '.shouldDelete')
+        
+        # Verificar si el agente debe eliminarse
+        if [ "$shouldDelete" = "true" ]; then
+          log 1 "ELIMINACIÓN SOLICITADA: El servidor ha marcado este agente para eliminación"
+          perform_self_deletion
+          return 0
+        fi
+        
+        # Guardar configuración anterior para comparar cambios
+        local previous_status="$AGENT_STATUS"
+        local previous_mode="$AGENT_MODE"
+        local previous_auto_update="$AGENT_AUTO_UPDATE"
       
       # Convertir true/false a active/inactive para status y mode
       if [ "$isActive" = "true" ]; then
@@ -1776,6 +1784,141 @@ start_sync_daemon() {
   # Registrar el PID del daemon para debugging
   SYNC_DAEMON_PID=$!
   log 2 "Daemon de sincronización iniciado con PID: $SYNC_DAEMON_PID"
+}
+
+# Función para realizar la auto-eliminación del agente
+perform_self_deletion() {
+  log 1 "=========================================="
+  log 1 "INICIANDO PROCESO DE AUTO-ELIMINACIÓN"
+  log 1 "=========================================="
+  
+  # Mostrar notificación al usuario
+  osascript -e 'display notification "El agente SoftCheck se está eliminando del sistema según las instrucciones del servidor." with title "SoftCheck Agent" sound name "Glass"' 2>/dev/null
+  
+  # Detener cualquier proceso relacionado
+  log 1 "Deteniendo procesos relacionados..."
+  
+  # Matar el daemon de sincronización si existe
+  if [ -n "$SYNC_DAEMON_PID" ]; then
+    kill $SYNC_DAEMON_PID 2>/dev/null
+    log 1 "Daemon de sincronización detenido (PID: $SYNC_DAEMON_PID)"
+  fi
+  
+  # Buscar y matar otros procesos del agente
+  pkill -f "MacOSInstallAgent" 2>/dev/null
+  
+  # Eliminar archivos de configuración
+  log 1 "Eliminando archivos de configuración..."
+  rm -rf "$HOME/.softcheck" 2>/dev/null
+  
+  # Eliminar directorio de cuarentena
+  log 1 "Eliminando directorio de cuarentena..."
+  rm -rf "$QUARANTINE_DIR" 2>/dev/null
+  
+  # Eliminar archivos de log si existen
+  log 1 "Eliminando archivos de log..."
+  rm -f "$HOME/Library/Logs/SoftCheck"* 2>/dev/null
+  rm -f "/tmp/softcheck"* 2>/dev/null
+  
+  # Buscar y eliminar LaunchAgents/LaunchDaemons relacionados
+  log 1 "Eliminando LaunchAgents y LaunchDaemons..."
+  rm -f "$HOME/Library/LaunchAgents/com.softcheck."* 2>/dev/null
+  rm -f "/Library/LaunchAgents/com.softcheck."* 2>/dev/null
+  rm -f "/Library/LaunchDaemons/com.softcheck."* 2>/dev/null
+  
+  # Descargar LaunchAgents si están cargados
+  launchctl unload "$HOME/Library/LaunchAgents/com.softcheck."* 2>/dev/null
+  
+  # Eliminar preferencias del sistema
+  log 1 "Eliminando preferencias del sistema..."
+  defaults delete com.softcheck.agent 2>/dev/null
+  
+  # Limpiar cache de aplicaciones
+  log 1 "Limpiando cache..."
+  rm -rf "$HOME/Library/Caches/com.softcheck."* 2>/dev/null
+  
+  # Eliminar entradas del Keychain si existen
+  log 1 "Eliminando entradas del Keychain..."
+  security delete-generic-password -s "SoftCheck Agent" 2>/dev/null
+  
+  # Restaurar permisos de aplicaciones que puedan estar restringidas
+  log 1 "Restaurando permisos de aplicaciones restringidas..."
+  find "/Applications" -name ".softcheck" -type d 2>/dev/null | while read -r metadata_dir; do
+    local app_path=$(dirname "$(dirname "$metadata_dir")")
+    log 1 "Restaurando permisos para: $app_path"
+    restore_app_execution "$app_path"
+  done
+  
+  # Crear script de auto-eliminación que se ejecutará después de que este proceso termine
+  local self_delete_script="/tmp/softcheck_self_delete_$(date +%s).sh"
+  
+  cat > "$self_delete_script" << 'EOF'
+#!/bin/bash
+# Script de auto-eliminación de SoftCheck Agent
+# Este script se ejecuta después de que el agente principal termine
+
+sleep 3
+
+# Obtener el directorio donde está ubicado el agente
+AGENT_SCRIPT="$1"
+AGENT_DIR=$(dirname "$AGENT_SCRIPT")
+
+echo "Eliminando agente desde: $AGENT_SCRIPT"
+echo "Directorio del agente: $AGENT_DIR"
+
+# Eliminar el script del agente
+rm -f "$AGENT_SCRIPT" 2>/dev/null
+
+# Si el agente está en un directorio específico, eliminar todo el directorio
+if [[ "$AGENT_DIR" == *"SoftCheck"* ]] || [[ "$AGENT_DIR" == *"softcheck"* ]]; then
+  echo "Eliminando directorio completo: $AGENT_DIR"
+  rm -rf "$AGENT_DIR" 2>/dev/null
+fi
+
+# Eliminar archivos de backup
+rm -f "${AGENT_SCRIPT}_backup"* 2>/dev/null
+rm -f "${AGENT_SCRIPT}.backup"* 2>/dev/null
+
+# Eliminar logs adicionales
+rm -f "$AGENT_DIR"/*.log 2>/dev/null
+rm -f "$AGENT_DIR"/agent*.log 2>/dev/null
+
+# Mostrar notificación final
+osascript -e 'display notification "SoftCheck Agent ha sido eliminado completamente del sistema." with title "SoftCheck Agent" sound name "Glass"' 2>/dev/null
+
+# Auto-eliminar este script
+rm -f "$0"
+
+echo "Auto-eliminación completada."
+EOF
+
+  chmod +x "$self_delete_script"
+  
+  # Enviar notificación final al servidor
+  log 1 "Enviando notificación final al servidor..."
+  local device_id=$(get_device_id)
+  local username=$(get_username)
+  local payload="{\"deviceId\":\"$device_id\",\"employeeEmail\":\"$username@example.com\",\"status\":\"deleted\",\"message\":\"Agent successfully removed from system\"}"
+  
+  curl -s -X POST \
+    -H "Content-Type: application/json" \
+    -H "X-API-KEY: $API_KEY" \
+    -d "$payload" \
+    "$PING_ENDPOINT" 2>/dev/null
+  
+  log 1 "=========================================="
+  log 1 "AUTO-ELIMINACIÓN COMPLETADA"
+  log 1 "El agente se eliminará en 3 segundos..."
+  log 1 "=========================================="
+  
+  # Mostrar notificación final
+  osascript -e 'display notification "SoftCheck Agent eliminado exitosamente. El sistema se limpiará automáticamente." with title "SoftCheck Agent" sound name "Glass"' 2>/dev/null
+  
+  # Ejecutar script de auto-eliminación en segundo plano y terminar
+  nohup "$self_delete_script" "$0" > /dev/null 2>&1 &
+  
+  # Terminar el proceso actual
+  exit 0
 }
 
 # Función para restringir permisos de ejecución de una aplicación

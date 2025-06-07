@@ -17,15 +17,12 @@ BACKEND_URL="http://localhost:4002/api"
 VERIFICATION_ENDPOINT="$BACKEND_URL/validate_software"
 API_KEY="305f98c40f6ab0224759d1725147ca1b"  # Debe coincidir con el valor en la base de datos
 APPS_DIRECTORY="/Applications"
-SCAN_INTERVAL=10  # segundos entre escaneos - verificar aplicaciones pendientes cada 10 segundos
+SCAN_INTERVAL=1  # segundos entre escaneos - verificar aplicaciones pendientes cada 10 segundos
 QUARANTINE_DIR="$HOME/Library/Application Support/AppQuarantine"
 SETTINGS_ENDPOINT="$BACKEND_URL/settings"  # Endpoint para obtener ajustes
 STATUS_ENDPOINT="$BACKEND_URL/agents/status"
 PING_ENDPOINT="$BACKEND_URL/agents/ping"  # Endpoint para enviar pings
 SOFTWARE_STATUS_ENDPOINT="$BACKEND_URL/software/status"  # Endpoint para verificar estado de aprobación
-
-# Archivo PID para evitar múltiples instancias
-PID_FILE="$HOME/.softcheck/agent.pid"
 
 # Configuración del agente
 AGENT_STATUS="active"      # active/inactive - Determina si el agente está funcionando
@@ -42,6 +39,57 @@ RETRY_INTERVAL=300 # 5 minutos entre reintentos de verificación después de un 
 AUTH_FAILURE_TIME=0 # Tiempo del último fallo de autenticación
 AUTH_FAILURE_REPORTED=0 # Para evitar mensajes repetitivos
 LAST_STATUS_NOTIFICATION=0 # Tiempo de la última notificación de estado
+
+# Variables globales para almacenar información de la IA
+LAST_IA_REASON=""
+LAST_IA_DETAILED_REASON=""
+
+# Variable para controlar el último tiempo de sincronización exitosa
+LAST_SYNC_TIME=0
+
+# Función para sanitizar texto de la IA para mostrar en diálogos
+sanitize_ia_text() {
+  local text="$1"
+  
+  # Si el texto está vacío o es null, retornar vacío
+  if [ -z "$text" ] || [ "$text" = "null" ]; then
+    echo ""
+    return
+  fi
+  
+  # Limpiar caracteres problemáticos y limitiar longitud
+  # Quitar comillas dobles problemáticas y saltos de línea literales
+  local clean_text=$(echo "$text" | sed 's/\\n/ /g' | sed 's/\\"/"/g' | sed 's/^"//g' | sed 's/"$//g')
+  
+  # Limitar longitud del mensaje para evitar diálogos muy largos (máximo 500 caracteres)
+  if [ ${#clean_text} -gt 500 ]; then
+    clean_text="${clean_text:0:497}..."
+  fi
+  
+  # Si el texto sigue vacío después de la limpieza, usar mensaje por defecto
+  if [ -z "$clean_text" ]; then
+    echo "No se proporcionó información adicional"
+  else
+    echo "$clean_text"
+  fi
+}
+
+# Función para escapar caracteres especiales en JSON
+escape_json_value() {
+  local value="$1"
+  
+  # Si el valor está vacío, retornar comillas vacías
+  if [ -z "$value" ]; then
+    echo ""
+    return
+  fi
+  
+  # Escapar caracteres especiales para JSON
+  # Primero las barras invertidas, luego las comillas dobles
+  local escaped_value=$(echo "$value" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/\n/\\n/g' | sed 's/\r/\\r/g' | sed 's/\t/\\t/g')
+  
+  echo "$escaped_value"
+}
 
 # Función para imprimir mensajes de log según el nivel de verbosidad
 log() {
@@ -170,16 +218,24 @@ sync_config_with_server() {
   
   # Verificar si obtuvo respuesta válida JSON con isActive
   if [[ "$response" == *"\"isActive\""* ]]; then
-    # Extraer valores del JSON (requiere jq instalado)
-    if command -v jq &> /dev/null; then
-      local isActive=$(echo "$response" | jq -r '.isActive')
-      local isActiveMode=$(echo "$response" | jq -r '.isActiveMode')
-      local autoUpdate=$(echo "$response" | jq -r '.autoUpdate')
-      
-      # Guardar configuración anterior para comparar cambios
-      local previous_status="$AGENT_STATUS"
-      local previous_mode="$AGENT_MODE"
-      local previous_auto_update="$AGENT_AUTO_UPDATE"
+          # Extraer valores del JSON (requiere jq instalado)
+      if command -v jq &> /dev/null; then
+        local isActive=$(echo "$response" | jq -r '.isActive')
+        local isActiveMode=$(echo "$response" | jq -r '.isActiveMode')
+        local autoUpdate=$(echo "$response" | jq -r '.autoUpdate')
+        local shouldDelete=$(echo "$response" | jq -r '.shouldDelete')
+        
+        # Verificar si el agente debe eliminarse
+        if [ "$shouldDelete" = "true" ]; then
+          log 1 "ELIMINACIÓN SOLICITADA: El servidor ha marcado este agente para eliminación"
+          perform_self_deletion
+          return 0
+        fi
+        
+        # Guardar configuración anterior para comparar cambios
+        local previous_status="$AGENT_STATUS"
+        local previous_mode="$AGENT_MODE"
+        local previous_auto_update="$AGENT_AUTO_UPDATE"
       
       # Convertir true/false a active/inactive para status y mode
       if [ "$isActive" = "true" ]; then
@@ -414,12 +470,97 @@ check_digital_signature() {
 # Obtener fecha de instalación aproximada (fecha de creación del directorio)
 get_install_date() {
   local app_path="$1"
-  local date_str=$(stat -f "%SB" -t "%Y-%m-%dT%H:%M:%SZ" "$app_path" 2>/dev/null)
-  if [ -n "$date_str" ]; then
-    echo "$date_str"
-  else
-    echo "null"
+  
+  # Verificar que la aplicación existe
+  if [ ! -d "$app_path" ]; then
+    log 2 "ADVERTENCIA: Aplicación no existe: $app_path" >&2
+    echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    return 1
   fi
+  
+  local date_str=$(stat -f "%SB" -t "%Y-%m-%dT%H:%M:%SZ" "$app_path" 2>/dev/null)
+  
+  # Si no hay fecha o es inválida, usar fecha actual
+  if [ -z "$date_str" ] || [ "$date_str" = "null" ]; then
+    log 2 "ADVERTENCIA: No se pudo obtener fecha de instalación para $app_path" >&2
+    echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    return 1
+  fi
+  
+  # Validar que la fecha no sea muy antigua (anterior a 1990) o muy futura
+  local year=$(echo "$date_str" | cut -d'-' -f1 2>/dev/null)
+  if [ -n "$year" ] && [ "$year" -ge 1990 ] && [ "$year" -le 2030 ]; then
+    echo "$date_str"
+    return 0
+  else
+    log 2 "ADVERTENCIA: Fecha de instalación inválida para $app_path: $date_str" >&2
+    echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    return 1
+  fi
+}
+
+# Función común para construir el JSON de software con todos los datos necesarios
+build_software_json() {
+  local app_name="$1"
+  local app_version="$2"
+  local app_path="$3"
+  local sha256="$4"
+  local username="$5"
+  local device_id="$6"
+  local vendor="$7"
+  local install_date="$8"
+  local is_running="$9"
+  local digital_signature="${10}"
+  local software_id="${11:-}"
+  
+  # Escapar todos los valores de texto para JSON
+  local escaped_app_name=$(escape_json_value "$app_name")
+  local escaped_app_version=$(escape_json_value "$app_version")
+  local escaped_app_path=$(escape_json_value "$app_path")
+  local escaped_sha256=$(escape_json_value "$sha256")
+  local escaped_username=$(escape_json_value "$username")
+  local escaped_device_id=$(escape_json_value "$device_id")
+  local escaped_vendor=$(escape_json_value "$vendor")
+  local escaped_install_date=$(escape_json_value "$install_date")
+  local escaped_software_id=$(escape_json_value "$software_id")
+  
+  # Crear objeto JSON base con todos los datos escapados
+  local json="{
+    \"device_id\": \"$escaped_device_id\",
+    \"user_id\": \"$escaped_username\",
+    \"software_name\": \"$escaped_app_name\",
+    \"version\": \"$escaped_app_version\",
+    \"vendor\": \"$escaped_vendor\",
+    \"install_date\": \"$escaped_install_date\",
+    \"install_path\": \"$escaped_app_path\",
+    \"install_method\": \"manual\",
+    \"last_executed\": null,
+    \"is_running\": $is_running,
+    \"digital_signature\": $digital_signature,
+    \"is_approved\": false,
+    \"detected_by\": \"macos_agent\",
+    \"sha256\": \"$escaped_sha256\",
+    \"notes\": null"
+  
+  # Añadir softwareId si se proporciona (para consultas de estado)
+  if [ -n "$software_id" ]; then
+    json="$json,\"softwareId\": \"$escaped_software_id\""
+  fi
+  
+  json="$json}"
+  
+  # Debug: verificar que el JSON es válido
+  if command -v jq &> /dev/null; then
+    if ! echo "$json" | jq empty 2>/dev/null; then
+      log 1 "ERROR: JSON de software construido es inválido para $escaped_app_name"
+      log 2 "DEBUG - JSON inválido: $json"
+      # Retornar un JSON mínimo válido como fallback
+      echo "{\"software_name\":\"$escaped_app_name\",\"version\":\"$escaped_app_version\",\"device_id\":\"$escaped_device_id\"}"
+      return 1
+    fi
+  fi
+  
+  echo "$json"
 }
 
 # Verificar si el software está autorizado con el servidor
@@ -437,28 +578,42 @@ verify_software() {
   
   log 1 "Verificando software: $app_name $app_version"
   
-  # Crear objeto JSON para verificación
-  local json="{
-    \"device_id\": \"$device_id\",
-    \"user_id\": \"$username\",
-    \"software_name\": \"$app_name\",
-    \"version\": \"$app_version\",
-    \"vendor\": \"$vendor\",
-    \"install_date\": \"$install_date\",
-    \"install_path\": \"$app_path\",
-    \"install_method\": \"manual\",
-    \"last_executed\": null,
-    \"is_running\": $is_running,
-    \"digital_signature\": $digital_signature,
-    \"is_approved\": false,
-    \"detected_by\": \"macos_agent\",
-    \"sha256\": \"$sha256\",
-    \"notes\": null
-  }"
+  # DEBUG: Mostrar valores antes de construir JSON
+  log 1 "DEBUG - Valores originales para $app_name:"
+  log 1 "DEBUG - app_name: '$app_name'"
+  log 1 "DEBUG - app_version: '$app_version'"
+  log 1 "DEBUG - app_path: '$app_path'"
+  log 1 "DEBUG - sha256: '$sha256'"
+  log 1 "DEBUG - username: '$username'"
+  log 1 "DEBUG - device_id: '$device_id'"
+  log 1 "DEBUG - vendor: '$vendor'"
+  log 1 "DEBUG - install_date: '$install_date'"
+  log 1 "DEBUG - is_running: '$is_running'"
+  log 1 "DEBUG - digital_signature: '$digital_signature'"
+  
+  # Crear objeto JSON usando la función común
+  local json=$(build_software_json "$app_name" "$app_version" "$app_path" "$sha256" "$username" "$device_id" "$vendor" "$install_date" "$is_running" "$digital_signature")
+  
+  # DEBUG: Mostrar JSON construido
+  log 1 "DEBUG - JSON construido para enviar:"
+  log 1 "DEBUG - JSON: $json"
+  
+  # Verificar que el JSON es válido antes de enviarlo
+  if command -v jq &> /dev/null; then
+    if ! echo "$json" | jq empty 2>/dev/null; then
+      log 1 "ERROR: JSON construido es inválido para $app_name"
+      log 1 "ERROR: JSON inválido: $json"
+      return 1
+    else
+      log 1 "DEBUG - JSON validado correctamente con jq"
+    fi
+  fi
   
   # Enviar solicitud de verificación y obtener respuesta
   local temp_response_file=$(mktemp)
   local temp_headers_file=$(mktemp)
+  
+  log 1 "DEBUG - Enviando petición POST a: $VERIFICATION_ENDPOINT"
   
   curl -s -X POST \
     -H "Content-Type: application/json" \
@@ -472,6 +627,12 @@ verify_software() {
   
   local curl_exit_code=$?
   local response=$(cat "$temp_response_file")
+  local curl_error=$(cat "$temp_headers_file")
+  
+  # DEBUG: Mostrar respuesta del servidor
+  log 1 "DEBUG - curl exit code: $curl_exit_code"
+  log 1 "DEBUG - curl error: $curl_error"
+  log 1 "DEBUG - Respuesta del servidor: $response"
   
   # Limpiar archivos temporales
   rm -f "$temp_response_file" "$temp_headers_file"
@@ -500,6 +661,17 @@ verify_software() {
       local auth_status=$(echo "$response" | jq -r '.authorizationStatus // ""')
       local auth_result=$(echo "$response" | jq -r '.authorizationResult // ""')
       
+      # Capturar razón detallada de la IA si está disponible
+      local razon_de_la_IA=$(echo "$response" | jq -r '.razon_de_la_IA // ""')
+      if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
+        LAST_IA_DETAILED_REASON="$razon_de_la_IA"
+        log 2 "Razón detallada de la IA capturada: '$razon_de_la_IA'"
+        log 2 "Longitud de la razón de la IA: ${#razon_de_la_IA} caracteres"
+      else
+        log 2 "No se encontró razón detallada de la IA válida en la respuesta"
+        LAST_IA_DETAILED_REASON=""
+      fi
+      
       # Verificar si hay información de autorización en la respuesta
       if [[ "$response" == *"autorizado"* ]]; then
         local autorizado=$(echo "$response" | jq -r '.autorizado // null')
@@ -507,10 +679,15 @@ verify_software() {
           status="rejected"
           if [[ "$response" == *"razon"* ]]; then
             rejection_reason=$(echo "$response" | jq -r '.razon // "No cumple con las políticas de seguridad"')
+            LAST_IA_REASON="$rejection_reason"
           fi
           log 2 "Software rechazado por autorización. Razón: $rejection_reason"
         elif [ "$autorizado" = "1" ] || [ "$autorizado" = "true" ]; then
           status="approved"
+          if [[ "$response" == *"razon"* ]]; then
+            local approval_reason=$(echo "$response" | jq -r '.razon // "Software verificado correctamente"')
+            LAST_IA_REASON="$approval_reason"
+          fi
           log 2 "Software aprobado por autorización"
         else
           status="pending"
@@ -519,8 +696,10 @@ verify_software() {
         # Detectar si fue explícitamente rechazada por otros medios
         if [ "$is_approved" = "true" ]; then
           status="approved"
+          LAST_IA_REASON="$rejection_reason"
         elif [ "$is_rejected" = "true" ] || [ -n "$rejection_reason" ] || [[ "$response" == *"\"rejected\""* ]]; then
           status="rejected"
+          LAST_IA_REASON="$rejection_reason"
           log 2 "Software rechazado. Razón: $rejection_reason"
         else
           status="pending"
@@ -566,6 +745,33 @@ add_to_pending_list() {
   local software_id="$4"
   local timestamp=$(date +%s)
   
+  # Verificar que la aplicación existe antes de añadirla a la lista
+  if [ ! -d "$app_path" ]; then
+    log 1 "ADVERTENCIA: No se puede añadir aplicación inexistente a lista de pendientes: $app_path"
+    return 1
+  fi
+  
+  # Verificar que sea una aplicación macOS válida
+  if [ ! -d "$app_path/Contents" ]; then
+    log 1 "ADVERTENCIA: $app_path no es una aplicación macOS válida, no se añadirá a pendientes"
+    return 1
+  fi
+  
+  # Obtener todos los datos necesarios para futuras consultas
+  local username=$(get_username)
+  local device_id=$(get_device_id)
+  local vendor=$(get_app_vendor "$app_path")
+  local install_date=$(get_install_date "$app_path")
+  local is_running=$(is_app_running "$app_name")
+  local digital_signature=$(check_digital_signature "$app_path")
+  local sha256="no_disponible"
+  
+  # Calcular SHA256 si es posible
+  local main_executable=$(find_main_executable "$app_path")
+  if [ -n "$main_executable" ]; then
+    sha256=$(calculate_sha256 "$main_executable")
+  fi
+  
   # Crear directorio de configuración si no existe
   mkdir -p "$(dirname "$PENDING_APPS_FILE")"
   
@@ -584,6 +790,13 @@ add_to_pending_list() {
       \"app_name\": \"$app_name\",
       \"app_version\": \"$app_version\",
       \"app_path\": \"$app_path\",
+      \"sha256\": \"$sha256\",
+      \"username\": \"$username\",
+      \"device_id\": \"$device_id\",
+      \"vendor\": \"$vendor\",
+      \"install_date\": \"$install_date\",
+      \"is_running\": \"$is_running\",
+      \"digital_signature\": \"$digital_signature\",
       \"timestamp\": $timestamp
     }"
     
@@ -591,15 +804,88 @@ add_to_pending_list() {
     local updated_json=$(echo "$current_json" | jq ". += [$new_entry]")
     echo "$updated_json" > "$PENDING_APPS_FILE"
     
-    log 2 "Aplicación $app_name añadida a la lista de pendientes"
+    log 2 "Aplicación $app_name añadida a la lista de pendientes con todos los datos"
   else
     log 1 "No se pudo añadir a la lista de pendientes: jq no está instalado"
+  fi
+}
+
+# Limpiar aplicaciones inexistentes de la lista de pendientes
+clean_invalid_pending_apps() {
+  log 2 "Limpiando aplicaciones inexistentes de la lista de pendientes..."
+  
+  # Verificar si hay aplicaciones pendientes
+  if [ ! -f "$PENDING_APPS_FILE" ]; then
+    log 2 "No hay archivo de aplicaciones pendientes"
+    return 0
+  fi
+  
+  # Leer la lista de aplicaciones pendientes
+  local pending_apps=$(cat "$PENDING_APPS_FILE")
+  
+  # Si no hay jq instalado, no podemos procesar el JSON
+  if ! command -v jq &> /dev/null; then
+    log 1 "Error: jq no está instalado, no se pueden limpiar aplicaciones pendientes"
+    return 1
+  fi
+  
+  # Verificar si el JSON es válido
+  if ! echo "$pending_apps" | jq empty 2>/dev/null; then
+    log 1 "Archivo de aplicaciones pendientes corrupto. Creando nuevo archivo vacío"
+    echo "[]" > "$PENDING_APPS_FILE"
+    return 1
+  fi
+  
+  # Contar cuántas aplicaciones hay pendientes
+  local count=$(echo "$pending_apps" | jq '. | length')
+  
+  if [ "$count" -eq 0 ]; then
+    log 2 "No hay aplicaciones pendientes que limpiar"
+    return 0
+  fi
+  
+  log 2 "Verificando $count aplicaciones pendientes..."
+  
+  # Array para almacenar aplicaciones válidas
+  local valid_apps="[]"
+  
+  # Iterar sobre cada aplicación pendiente
+  for i in $(seq 0 $(($count - 1))); do
+    local app_path=$(echo "$pending_apps" | jq -r ".[$i].app_path")
+    local app_name=$(echo "$pending_apps" | jq -r ".[$i].app_name")
+    
+    # Verificar si la aplicación existe físicamente
+    if [ -d "$app_path" ] && [ -d "$app_path/Contents" ]; then
+      # Aplicación válida, mantenerla
+      local app_entry=$(echo "$pending_apps" | jq ".[$i]")
+      valid_apps=$(echo "$valid_apps" | jq ". += [$app_entry]")
+      log 2 "Manteniendo aplicación válida: $app_name"
+    else
+      # Aplicación inexistente, eliminarla
+      log 1 "Eliminando aplicación inexistente de la lista: $app_name ($app_path)"
+    fi
+  done
+  
+  # Guardar la lista actualizada
+  echo "$valid_apps" > "$PENDING_APPS_FILE"
+  
+  # Contar aplicaciones después de la limpieza
+  local new_count=$(echo "$valid_apps" | jq '. | length')
+  local removed_count=$((count - new_count))
+  
+  if [ $removed_count -gt 0 ]; then
+    log 1 "Se eliminaron $removed_count aplicaciones inexistentes de la lista de pendientes"
+  else
+    log 2 "No se encontraron aplicaciones inexistentes que eliminar"
   fi
 }
 
 # Verificar estado de aplicaciones pendientes
 check_pending_applications() {
   log 2 "Verificando aplicaciones pendientes..."
+  
+  # Primero limpiar aplicaciones inexistentes
+  clean_invalid_pending_apps
   
   # Verificar si hay aplicaciones pendientes
   if [ ! -f "$PENDING_APPS_FILE" ]; then
@@ -626,19 +912,19 @@ check_pending_applications() {
   # Contar cuántas aplicaciones hay pendientes
   local count=$(echo "$pending_apps" | jq '. | length')
   
-  # Si hay aplicaciones pendientes, mostrar notificación de estado cada 30 segundos
-  if [ "$count" -gt 0 ]; then
-    local now=$(date +%s)
-    # Verificar si han pasado 30 segundos desde la última notificación de estado
-    if [ -z "$LAST_STATUS_NOTIFICATION" ] || [ $((now - LAST_STATUS_NOTIFICATION)) -ge 30 ]; then
-      show_notification "Verificación en Proceso" "Analizando $count aplicación(es)... El proceso puede tardar hasta 20 segundos"
-      LAST_STATUS_NOTIFICATION=$now
-    fi
-    log 2 "$count aplicaciones pendientes encontradas"
-  else
+  if [ "$count" -eq 0 ]; then
     log 2 "No hay aplicaciones pendientes"
     return 0
   fi
+  
+  # Si hay aplicaciones pendientes, mostrar notificación de estado cada 30 segundos
+  local now=$(date +%s)
+  # Verificar si han pasado 30 segundos desde la última notificación de estado
+  if [ -z "$LAST_STATUS_NOTIFICATION" ] || [ $((now - LAST_STATUS_NOTIFICATION)) -ge 30 ]; then
+    # show_notification "Verificación en Proceso" "Analizando $count aplicación(es)... El proceso puede tardar hasta 20 segundos"
+    LAST_STATUS_NOTIFICATION=$now
+  fi
+  log 2 "$count aplicaciones pendientes encontradas"
   
   # Array para almacenar IDs de aplicaciones a eliminar de la lista
   local apps_to_remove=()
@@ -649,41 +935,83 @@ check_pending_applications() {
     local app_name=$(echo "$pending_apps" | jq -r ".[$i].app_name")
     local app_version=$(echo "$pending_apps" | jq -r ".[$i].app_version")
     local app_path=$(echo "$pending_apps" | jq -r ".[$i].app_path")
+    local sha256=$(echo "$pending_apps" | jq -r ".[$i].sha256 // \"no_disponible\"")
+    local username=$(echo "$pending_apps" | jq -r ".[$i].username // \"\"")
+    local device_id=$(echo "$pending_apps" | jq -r ".[$i].device_id // \"\"")
+    local vendor=$(echo "$pending_apps" | jq -r ".[$i].vendor // \"desconocido\"")
+    local install_date=$(echo "$pending_apps" | jq -r ".[$i].install_date // \"null\"")
+    local is_running=$(echo "$pending_apps" | jq -r ".[$i].is_running // \"false\"")
+    local digital_signature=$(echo "$pending_apps" | jq -r ".[$i].digital_signature // \"false\"")
+    
+    # Si falta información crítica, obtenerla dinámicamente
+    if [ -z "$username" ] || [ "$username" = "null" ]; then
+      username=$(get_username)
+    fi
+    if [ -z "$device_id" ] || [ "$device_id" = "null" ]; then
+      device_id=$(get_device_id)
+    fi
     
     log 2 "Re-verificando estado de $app_name (ID: $software_id)..."
     
-    # Primero intentar consultar el estado de autorización directamente
+    # Primero intentar consultar el estado de autorización directamente con todos los datos
     local auth_status_result=""
-    if check_authorization_status "$software_id" "$app_name"; then
-      auth_status_result=$(check_authorization_status "$software_id" "$app_name")
+    if check_authorization_status "$software_id" "$app_name" "$app_version" "$app_path" "$sha256" "$username" "$device_id" "$vendor" "$install_date" "$is_running" "$digital_signature"; then
+      auth_status_result=$(check_authorization_status "$software_id" "$app_name" "$app_version" "$app_path" "$sha256" "$username" "$device_id" "$vendor" "$install_date" "$is_running" "$digital_signature")
       
       # Procesar resultado de la consulta de autorización
-      if [[ "$auth_status_result" == "approved" ]]; then
+      if [[ "$auth_status_result" == "approved"* ]]; then
         # Software aprobado
         log 1 "$app_name ha sido aprobado. Restaurando permisos de ejecución..."
-        show_dialog "Análisis Completado - APROBADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales. Se están restaurando los permisos de ejecución." "note"
+        
+        # Extraer razón si está incluida en el resultado
+        local ia_reason=""
+        if [[ "$auth_status_result" == *":"* ]]; then
+          ia_reason="${auth_status_result#approved:}"
+          # Sanitizar la razón obtenida
+          ia_reason=$(sanitize_ia_text "$ia_reason")
+        fi
+        
+        # Construir mensaje con razón de la IA si está disponible
+        local approval_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales."
+        
+        if [ -n "$ia_reason" ] && [ "$ia_reason" != "null" ]; then
+          approval_message="$approval_message\n\nAnálisis de la IA: $ia_reason"
+        fi
+        
+        approval_message="$approval_message\n\nSe están restaurando los permisos de ejecución."
+        
+        show_dialog "Análisis Completado - APROBADO" "$approval_message" "note"
         
         if restore_app_execution "$app_path"; then
           log 1 "Permisos restaurados para $app_name"
-          show_notification "Software Aprobado" "$app_name está listo para usar"
+          # show_notification "Software Aprobado" "$app_name está listo para usar"
           apps_to_remove+=("$software_id")
         else
           show_dialog "Error de Restauración" "El software $app_name ha sido aprobado, pero hubo un problema al restaurar sus permisos." "stop"
         fi
-        continue
+      continue
       elif [[ "$auth_status_result" == rejected:* ]]; then
         # Software rechazado
         local rejection_reason="${auth_status_result#rejected:}"
-        if [ -z "$rejection_reason" ]; then
+        if [ -z "$rejection_reason" ] || [ "$rejection_reason" = "null" ]; then
           rejection_reason="No cumple con las políticas de seguridad"
+        else
+          # Sanitizar la razón obtenida del resultado de autorización
+          rejection_reason=$(sanitize_ia_text "$rejection_reason")
+          if [ -z "$rejection_reason" ]; then
+            rejection_reason="No cumple con las políticas de seguridad"
+          fi
         fi
         
         log 1 "$app_name ha sido rechazado. Eliminando..."
-        show_dialog "Análisis Completado - DENEGADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad." "stop"
+        
+        local denial_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad."
+        
+        show_dialog "Análisis Completado - DENEGADO" "$denial_message" "stop"
         
         if delete_application "$app_path"; then
           log 1 "Aplicación $app_name eliminada correctamente"
-          show_notification "Software Eliminado" "$app_name ha sido eliminado por seguridad"
+          # show_notification "Software Eliminado" "$app_name ha sido eliminado por seguridad"
           apps_to_remove+=("$software_id")
         else
           show_dialog "Error de Eliminación" "El software $app_name ha sido rechazado, pero hubo un problema al eliminarlo." "stop"
@@ -692,36 +1020,49 @@ check_pending_applications() {
       elif [[ "$auth_status_result" == "pending" ]]; then
         # Aún pendiente
         log 2 "$app_name sigue pendiente de autorización"
-        continue
+      continue
       fi
     fi
     
     # Si la consulta directa falla, usar el método tradicional de re-verificación
     log 2 "Usando método de re-verificación tradicional para $app_name..."
     
-    # Re-enviar al servidor para verificar estado actual
-    local username=$(get_username)
-    local device_id=$(get_device_id)
-    local vendor=$(get_app_vendor "$app_path")
-    local install_date=$(get_install_date "$app_path")
-    local is_running=$(is_app_running "$app_name")
-    local digital_signature=$(check_digital_signature "$app_path")
-    local sha256="no_disponible"
+    # Usar los datos almacenados para re-verificar el software
+    # Solo obtener dinámicamente los datos que pueden cambiar (is_running)
+    local current_is_running=$(is_app_running "$app_name")
     
-    # Volver a verificar el software
+    # Volver a verificar el software usando todos los datos originales
     local verification_result
-    verify_software "$app_name" "$app_version" "$app_path" "$sha256" "$username" "$device_id" "$vendor" "$install_date" "$is_running" "$digital_signature"
+    verify_software "$app_name" "$app_version" "$app_path" "$sha256" "$username" "$device_id" "$vendor" "$install_date" "$current_is_running" "$digital_signature"
     verification_result=$?
     
     # Actuar según el resultado
     if [ $verification_result -eq 0 ]; then
       # Software aprobado
       log 1 "$app_name ha sido aprobado. Restaurando permisos de ejecución..."
-      show_dialog "Análisis Completado - APROBADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales. Se están restaurando los permisos de ejecución." "note"
+      
+      # Construir mensaje con razón de la IA si está disponible
+      local approval_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales."
+      
+      if [ -n "$LAST_IA_DETAILED_REASON" ] && [ "$LAST_IA_DETAILED_REASON" != "null" ]; then
+        local ia_analysis=$(sanitize_ia_text "$LAST_IA_DETAILED_REASON")
+        if [ -n "$ia_analysis" ]; then
+          approval_message="$approval_message\n\nAnálisis de la IA: $ia_analysis"
+        fi
+      elif [ -n "$LAST_IA_REASON" ] && [ "$LAST_IA_REASON" != "null" ]; then
+        local ia_evaluation=$(sanitize_ia_text "$LAST_IA_REASON")
+        if [ -n "$ia_evaluation" ]; then
+          approval_message="$approval_message\n\nEvaluación: $ia_evaluation"
+        fi
+      fi
+      
+      approval_message="$approval_message\n\nSe están restaurando los permisos de ejecución."
+      
+      show_dialog "Análisis Completado - APROBADO" "$approval_message" "note"
       
       if restore_app_execution "$app_path"; then
         log 1 "Permisos restaurados para $app_name"
-        show_notification "Software Aprobado" "$app_name está listo para usar"
+        # show_notification "Software Aprobado" "$app_name está listo para usar"
         apps_to_remove+=("$software_id")
       else
         show_dialog "Error de Restauración" "El software $app_name ha sido aprobado, pero hubo un problema al restaurar sus permisos." "stop"
@@ -730,16 +1071,28 @@ check_pending_applications() {
       # Software rechazado
       log 1 "$app_name ha sido rechazado. Eliminando..."
       
+      # Usar la razón de la IA si está disponible y sanitizarla
       local rejection_reason="No cumple con las políticas de seguridad"
-      if [[ "$response" == *"\"reason\""* ]] && command -v jq &> /dev/null; then
-        rejection_reason=$(echo "$response" | jq -r '.reason // "No cumple con las políticas de seguridad"')
+      if [ -n "$LAST_IA_DETAILED_REASON" ] && [ "$LAST_IA_DETAILED_REASON" != "null" ]; then
+        rejection_reason=$(sanitize_ia_text "$LAST_IA_DETAILED_REASON")
+        log 2 "Usando razón detallada de la IA sanitizada: $rejection_reason"
+      elif [ -n "$LAST_IA_REASON" ] && [ "$LAST_IA_REASON" != "null" ]; then
+        rejection_reason=$(sanitize_ia_text "$LAST_IA_REASON")
+        log 2 "Usando razón de la IA sanitizada: $rejection_reason"
       fi
       
-      show_dialog "Análisis Completado - DENEGADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad." "stop"
+      # Verificar que el rejection_reason no esté vacío después de la sanitización
+      if [ -z "$rejection_reason" ]; then
+        rejection_reason="No cumple con las políticas de seguridad"
+      fi
+      
+      local denial_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad."
+      
+      show_dialog "Análisis Completado - DENEGADO" "$denial_message" "stop"
       
       if delete_application "$app_path"; then
         log 1 "Aplicación $app_name eliminada correctamente"
-        show_notification "Software Eliminado" "$app_name ha sido eliminado por seguridad"
+        # show_notification "Software Eliminado" "$app_name ha sido eliminado por seguridad"
         apps_to_remove+=("$software_id")
       else
         show_dialog "Error de Eliminación" "El software $app_name ha sido rechazado, pero hubo un problema al eliminarlo." "stop"
@@ -948,6 +1301,18 @@ process_new_application() {
   local app_name="$1"
   local app_path="$2"
   
+  # Verificar que la aplicación existe físicamente
+  if [ ! -d "$app_path" ]; then
+    log 1 "ADVERTENCIA: Aplicación no existe, omitiendo procesamiento: $app_path"
+    return 0
+  fi
+  
+  # Verificar que es realmente una aplicación macOS válida
+  if [ ! -d "$app_path/Contents" ]; then
+    log 1 "ADVERTENCIA: $app_path no parece ser una aplicación macOS válida, omitiendo"
+    return 0
+  fi
+  
   # Si el agente está inactivo, no procesar nuevas aplicaciones
   if [ "$AGENT_STATUS" = "inactive" ]; then
     log 1 "Agente inactivo. Detectada nueva aplicación $app_name pero no se tomará ninguna acción"
@@ -996,27 +1361,68 @@ process_new_application() {
   verification_result=$?
   
   if [ $verification_result -eq 0 ]; then
-    # Software aprobado inmediatamente (whitelist)
-    log 1 "$app_name ha sido aprobado inmediatamente. Restaurando permisos de ejecución"
-    show_dialog "Análisis Completado - APROBADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales. Se están restaurando los permisos de ejecución." "note"
-    restore_app_execution "$app_path"
-    show_notification "Software Aprobado" "$app_name está listo para usar"
-  elif [ $verification_result -eq 2 ]; then
-    # Software rechazado inmediatamente (blacklist)
-    log 1 "$app_name ha sido rechazado inmediatamente. Eliminando"
-    local reason="No cumple con las políticas de seguridad"
-    if [[ "$response" == *"\"reason\""* ]] && command -v jq &> /dev/null; then
-      reason=$(echo "$response" | jq -r '.reason // "No cumple con las políticas de seguridad"')
+    # Software aprobado
+    log 1 "$app_name ha sido aprobado. Restaurando permisos de ejecución..."
+    
+    # Construir mensaje con razón de la IA si está disponible
+    local approval_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: APROBADO ✅\n\nLa aplicación ha superado todos los controles de seguridad y políticas empresariales."
+    
+    if [ -n "$LAST_IA_DETAILED_REASON" ] && [ "$LAST_IA_DETAILED_REASON" != "null" ]; then
+      local ia_analysis=$(sanitize_ia_text "$LAST_IA_DETAILED_REASON")
+      if [ -n "$ia_analysis" ]; then
+        approval_message="$approval_message\n\nAnálisis de la IA: $ia_analysis"
+      fi
+    elif [ -n "$LAST_IA_REASON" ] && [ "$LAST_IA_REASON" != "null" ]; then
+      local ia_evaluation=$(sanitize_ia_text "$LAST_IA_REASON")
+      if [ -n "$ia_evaluation" ]; then
+        approval_message="$approval_message\n\nEvaluación: $ia_evaluation"
+      fi
     fi
-    show_dialog "Análisis Completado - DENEGADO" "El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad." "stop"
-    delete_application "$app_path"
-    show_notification "Software Eliminado" "$app_name ha sido eliminado por seguridad"
-  else
-    # Software pendiente - añadir a lista para verificación periódica
-    log 1 "$app_name necesita aprobación. Añadiendo a lista de verificación cada 10 segundos"
-    if [ -n "$software_id" ]; then
-      add_to_pending_list "$app_name" "$app_version" "$app_path" "$software_id"
+    
+    approval_message="$approval_message\n\nSe están restaurando los permisos de ejecución."
+    
+    show_dialog "Análisis Completado - APROBADO" "$approval_message" "note"
+    
+    if restore_app_execution "$app_path"; then
+      log 1 "Permisos restaurados para $app_name"
+      # show_notification "Software Aprobado" "$app_name está listo para usar"
+      apps_to_remove+=("$software_id")
+    else
+      show_dialog "Error de Restauración" "El software $app_name ha sido aprobado, pero hubo un problema al restaurar sus permisos." "stop"
     fi
+    elif [ $verification_result -eq 2 ]; then
+    # Software rechazado
+    log 1 "$app_name ha sido rechazado. Eliminando..."
+    
+    # Usar la razón de la IA si está disponible y sanitizarla
+    local rejection_reason="No cumple con las políticas de seguridad"
+    if [ -n "$LAST_IA_DETAILED_REASON" ] && [ "$LAST_IA_DETAILED_REASON" != "null" ]; then
+      rejection_reason=$(sanitize_ia_text "$LAST_IA_DETAILED_REASON")
+      log 2 "Usando razón detallada de la IA sanitizada: $rejection_reason"
+    elif [ -n "$LAST_IA_REASON" ] && [ "$LAST_IA_REASON" != "null" ]; then
+      rejection_reason=$(sanitize_ia_text "$LAST_IA_REASON")
+      log 2 "Usando razón de la IA sanitizada: $rejection_reason"
+    fi
+    
+    # Verificar que el rejection_reason no esté vacío después de la sanitización
+    if [ -z "$rejection_reason" ]; then
+      rejection_reason="No cumple con las políticas de seguridad"
+    fi
+    
+    local denial_message="El análisis de ciberseguridad de $app_name ha finalizado.\n\nRESULTADO: DENEGADO ❌\n\nRazón: $rejection_reason\n\nLa aplicación será eliminada del sistema por motivos de seguridad."
+    
+    show_dialog "Análisis Completado - DENEGADO" "$denial_message" "stop"
+    
+      if delete_application "$app_path"; then
+        log 1 "Aplicación $app_name eliminada correctamente"
+        # show_notification "Software Eliminado" "$app_name ha sido eliminado por seguridad"
+        apps_to_remove+=("$software_id")
+      else
+      show_dialog "Error de Eliminación" "El software $app_name ha sido rechazado, pero hubo un problema al eliminarlo." "stop"
+      fi
+    else
+    # Software aún pendiente
+    log 2 "$app_name sigue pendiente de aprobación"
   fi
 }
 
@@ -1024,28 +1430,31 @@ process_new_application() {
 check_authorization_status() {
   local software_id="$1"
   local app_name="$2"
+  local app_version="$3"
+  local app_path="$4"
+  local sha256="$5"
+  local username="$6"
+  local device_id="$7"
+  local vendor="$8"
+  local install_date="$9"
+  local is_running="${10}"
+  local digital_signature="${11}"
   
   log 2 "Consultando estado de autorización para $app_name (ID: $software_id)..."
   
-  # Usar una petición simple para consultar el status del software específico
-  # Vamos a enviar una consulta mínima a validate_software solo para obtener el estado actualizado
-  local minimal_json="{
-    \"device_id\": \"$(get_device_id)\",
-    \"software_name\": \"$app_name\",
-    \"version\": \"unknown\",
-    \"softwareId\": \"$software_id\"
-  }"
+  # Usar la función común para construir el JSON con todos los datos originales
+  local json=$(build_software_json "$app_name" "$app_version" "$app_path" "$sha256" "$username" "$device_id" "$vendor" "$install_date" "$is_running" "$digital_signature" "$software_id")
   
   local status_response=$(curl -s -X POST \
     -H "Content-Type: application/json" \
     -H "X-API-KEY: $API_KEY" \
     -H "Accept: application/json" \
     -H "User-Agent: SoftCheck-Agent/1.0" \
-    -d "$minimal_json" \
+    -d "$json" \
     "$VERIFICATION_ENDPOINT" 2>/dev/null)
   
-  # DEBUG: Mostrar respuesta cruda para debugging
-  log 1 "DEBUG: Respuesta cruda del servidor para $app_name: $status_response"
+  # DEBUG: Mostrar la respuesta completa para debugging
+  log 2 "DEBUG - Respuesta del servidor para $app_name: $status_response"
   
   # Analizar respuesta para detectar estado actualizado
   if command -v jq &> /dev/null && echo "$status_response" | jq empty 2>/dev/null; then
@@ -1053,18 +1462,42 @@ check_authorization_status() {
     local is_rejected=$(echo "$status_response" | jq -r '.isRejected // false')
     local rejection_reason=$(echo "$status_response" | jq -r '.reason // ""')
     
+    # Capturar razón detallada de la IA si está disponible
+    local razon_de_la_IA=$(echo "$status_response" | jq -r '.razon_de_la_IA // ""')
+    if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
+      LAST_IA_DETAILED_REASON="$razon_de_la_IA"
+      log 2 "Razón detallada de la IA capturada en check_authorization_status: '$razon_de_la_IA'"
+      log 2 "Longitud de la razón de la IA: ${#razon_de_la_IA} caracteres"
+    else
+      log 2 "No se encontró razón detallada de la IA válida en check_authorization_status"
+    fi
+    
+    log 2 "DEBUG - isApproved: $is_approved, isRejected: $is_rejected, reason: $rejection_reason"
+    
     # Buscar indicadores de autorización en la respuesta
     if [[ "$status_response" == *"autorizado"* ]]; then
       local autorizado=$(echo "$status_response" | jq -r '.autorizado // null')
       local razon=$(echo "$status_response" | jq -r '.razon // ""')
       
+      log 2 "DEBUG - autorizado: $autorizado, razon: $razon"
+      
       if [ "$autorizado" = "0" ] || [ "$autorizado" = "false" ]; then
         log 2 "Autorización completada: RECHAZADO - $razon"
-        echo "rejected:$razon"
+        # Usar razon_de_la_IA si está disponible, sino usar razon normal
+        local final_reason="$razon"
+        if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
+          final_reason="$razon_de_la_IA"
+        fi
+        echo "rejected:$final_reason"
         return 0
       elif [ "$autorizado" = "1" ] || [ "$autorizado" = "true" ]; then
         log 2 "Autorización completada: APROBADO"
-        echo "approved"
+        # Usar razon_de_la_IA si está disponible, sino usar razon normal
+        local final_reason="$razon"
+        if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
+          final_reason="$razon_de_la_IA"
+        fi
+        echo "approved:$final_reason"
         return 0
       fi
     fi
@@ -1072,22 +1505,33 @@ check_authorization_status() {
     # Verificar si el estado cambió en la base de datos
     if [ "$is_approved" = "true" ]; then
       log 2 "Software aprobado en base de datos"
-      echo "approved"
+      # Usar razon_de_la_IA si está disponible
+      local final_reason="Software verificado correctamente"
+      if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
+        final_reason="$razon_de_la_IA"
+      fi
+      echo "approved:$final_reason"
       return 0
     elif [ "$is_rejected" = "true" ] || [ -n "$rejection_reason" ]; then
       log 2 "Software rechazado en base de datos: $rejection_reason"
-      echo "rejected:$rejection_reason"
+      # Usar razon_de_la_IA si está disponible, sino usar rejection_reason
+      local final_reason="$rejection_reason"
+      if [ -n "$razon_de_la_IA" ] && [ "$razon_de_la_IA" != "null" ]; then
+        final_reason="$razon_de_la_IA"
+      fi
+      echo "rejected:$final_reason"
       return 0
     fi
-    
-    log 2 "Software aún pendiente de autorización"
-    echo "pending"
-    return 0
   else
     log 1 "Error al consultar estado de autorización: respuesta inválida"
     echo "error"
     return 1
   fi
+  
+  # Si llegamos aquí, el software sigue pendiente
+  log 2 "Software sigue pendiente de autorización"
+  echo "pending"
+  return 1
 }
 
 # Verificar si el software ya existe en la base de datos
@@ -1113,17 +1557,17 @@ check_software_database() {
   if command -v jq &> /dev/null; then
     # Verificar si la respuesta es un JSON válido antes de procesarla
     if echo "$response" | jq empty 2>/dev/null; then
-      # Extraer información relevante
-      local exists=$(echo "$response" | jq -r '.exists // false')
-      local software_id=$(echo "$response" | jq -r '.softwareId // ""')
-      local status=$(echo "$response" | jq -r '.status // "unknown"')
-      
-      if [ "$exists" = "true" ] && [ -n "$software_id" ]; then
-        log 2 "Software encontrado en la base de datos. ID: $software_id, Estado: $status"
-        return 0
-      else
-        log 2 "Software no encontrado en la base de datos"
-        return 1
+    # Extraer información relevante
+    local exists=$(echo "$response" | jq -r '.exists // false')
+    local software_id=$(echo "$response" | jq -r '.softwareId // ""')
+    local status=$(echo "$response" | jq -r '.status // "unknown"')
+    
+    if [ "$exists" = "true" ] && [ -n "$software_id" ]; then
+      log 2 "Software encontrado en la base de datos. ID: $software_id, Estado: $status"
+      return 0
+    else
+      log 2 "Software no encontrado en la base de datos"
+      return 1
       fi
     else
       log 1 "Error: Respuesta del servidor no es JSON válido: $response"
@@ -1157,7 +1601,7 @@ run_monitor() {
   setup_config_dir
   
   # Limpiar lista de aplicaciones pendientes al iniciar
-  # clear_pending_apps_list  # Comentado para no perder aplicaciones pendientes al reiniciar
+  clear_pending_apps_list
   
   # Cargar o crear configuración
   load_or_create_config
@@ -1167,10 +1611,10 @@ run_monitor() {
   
   # Variables para controlar el estado del monitor
   local monitoring_active=true
-  local initial_apps=""
+  local last_scan_apps=""
   
   # Mostrar notificación de inicio
-  show_notification "Monitor de Instalaciones" "Monitor de instalaciones iniciado"
+  # show_notification "Monitor de Instalaciones" "Monitor de instalaciones iniciado"
   
   # Iniciar bucle principal que permanece activo incluso cuando el agente está inactivo
   while true; do
@@ -1178,44 +1622,45 @@ run_monitor() {
     if [ "$AGENT_STATUS" = "inactive" ] && [ "$monitoring_active" = "true" ]; then
       log 1 "Agente configurado como inactivo. Entrando en modo espera"
       monitoring_active=false
-      show_notification "Monitor de Instalaciones" "Agente inactivo - modo espera activado"
+      # show_notification "Monitor de Instalaciones" "Agente inactivo - modo espera activado"
     elif [ "$AGENT_STATUS" = "active" ] && [ "$monitoring_active" = "false" ]; then
       log 1 "Agente reactivado. Retomando monitorización"
       monitoring_active=true
-      show_notification "Monitor de Instalaciones" "Agente reactivado en modo $AGENT_MODE"
-      # Reinicializar la lista de aplicaciones para evitar alertas de aplicaciones instaladas durante inactividad
-      initial_apps=$(get_current_apps)
+      # show_notification "Monitor de Instalaciones" "Agente reactivado en modo $AGENT_MODE"
+      # Reinicializar la lista de aplicaciones para detectar cambios durante inactividad
+      last_scan_apps=""
     fi
     
     # Si el agente está activo, realizar el monitoreo normal
     if [ "$monitoring_active" = "true" ]; then
-      # Si es la primera ejecución, inicializar la lista de aplicaciones
-      if [ -z "$initial_apps" ]; then
-        initial_apps=$(get_current_apps)
-        log 1 "Se han detectado $(echo "$initial_apps" | wc -l | tr -d ' ') aplicaciones iniciales"
-      fi
-      
       # Verificar aplicaciones pendientes
       check_pending_applications
       
       # Obtener lista actual de aplicaciones
       local current_apps=$(get_current_apps)
       
-      # Buscar nuevas aplicaciones
-      while IFS= read -r app; do
-        if [ -n "$app" ] && ! app_exists "$app" "$initial_apps"; then
-          log 1 "Nueva aplicación detectada: $app"
-          
-          # Extraer nombre sin extensión .app
-          local app_name="${app%.app}"
-          
-          # Procesar la nueva aplicación
-          process_new_application "$app_name" "$APPS_DIRECTORY/$app"
-          
-          # Actualizar lista de aplicaciones conocidas
-          initial_apps=$(echo -e "$initial_apps\n$app")
-        fi
-      done < <(echo "$current_apps")
+      # En el primer escaneo, solo inicializar la lista sin procesar
+      if [ -z "$last_scan_apps" ]; then
+        last_scan_apps="$current_apps"
+        log 1 "Se han detectado $(echo "$current_apps" | wc -l | tr -d ' ') aplicaciones en el primer escaneo"
+      else
+        # Buscar aplicaciones que NO estaban en el escaneo anterior
+        # Esto detecta nuevas instalaciones (incluyendo reinstalaciones)
+        while IFS= read -r app; do
+          if [ -n "$app" ] && ! app_exists "$app" "$last_scan_apps"; then
+            log 1 "Nueva instalación detectada: $app"
+            
+            # Extraer nombre sin extensión .app
+            local app_name="${app%.app}"
+            
+            # SIEMPRE procesar la aplicación - cada instalación pasa por verificación
+            process_new_application "$app_name" "$APPS_DIRECTORY/$app"
+          fi
+        done < <(echo "$current_apps")
+        
+        # Actualizar lista del último escaneo
+        last_scan_apps="$current_apps"
+      fi
       
       # Esperar antes del siguiente escaneo (intervalo normal para monitoreo activo)
       sleep $SCAN_INTERVAL
@@ -1233,8 +1678,29 @@ ping_server() {
   
   log 2 "Enviando ping al servidor..."
   
-  # Construir payload con información del agente
-  local payload="{\"deviceId\":\"$device_id\",\"employeeEmail\":\"$username@example.com\",\"status\":\"$AGENT_STATUS\"}"
+  # Escapar valores para JSON
+  local escaped_device_id=$(escape_json_value "$device_id")
+  local escaped_username=$(escape_json_value "$username")
+  local escaped_status=$(escape_json_value "$AGENT_STATUS")
+  
+  # Construir payload con información del agente usando valores escapados
+  local payload="{\"deviceId\":\"$escaped_device_id\",\"employeeEmail\":\"$escaped_username@example.com\",\"status\":\"$escaped_status\"}"
+  
+  # Debug: mostrar valores antes de enviar
+  log 2 "DEBUG - device_id original: '$device_id'"
+  log 2 "DEBUG - device_id escapado: '$escaped_device_id'"
+  log 2 "DEBUG - username original: '$username'"
+  log 2 "DEBUG - username escapado: '$escaped_username'"
+  log 2 "DEBUG - status: '$AGENT_STATUS'"
+  log 2 "DEBUG - payload JSON: '$payload'"
+  
+  # Verificar que el JSON es válido antes de enviarlo
+  if command -v jq &> /dev/null; then
+    if ! echo "$payload" | jq empty 2>/dev/null; then
+      log 1 "ERROR: JSON del ping es inválido: $payload"
+      return 1
+    fi
+  fi
   
   # Enviar ping al servidor
   local ping_response=$(curl -s -X POST \
@@ -1244,6 +1710,9 @@ ping_server() {
     -H "User-Agent: SoftCheck-Agent/1.0" \
     -d "$payload" \
     "$PING_ENDPOINT")
+  
+  # Debug: mostrar respuesta del servidor
+  log 2 "DEBUG - ping response: '$ping_response'"
   
   # Verificar si la respuesta fue exitosa
   if [[ "$ping_response" == *"\"success\":true"* ]]; then
@@ -1258,7 +1727,7 @@ ping_server() {
     
     return 0
   else
-    log 1 "Error al enviar ping al servidor"
+    log 1 "Error al enviar ping al servidor: $ping_response"
     return 1
   fi
 }
@@ -1315,6 +1784,141 @@ start_sync_daemon() {
   # Registrar el PID del daemon para debugging
   SYNC_DAEMON_PID=$!
   log 2 "Daemon de sincronización iniciado con PID: $SYNC_DAEMON_PID"
+}
+
+# Función para realizar la auto-eliminación del agente
+perform_self_deletion() {
+  log 1 "=========================================="
+  log 1 "INICIANDO PROCESO DE AUTO-ELIMINACIÓN"
+  log 1 "=========================================="
+  
+  # Mostrar notificación al usuario
+  osascript -e 'display notification "El agente SoftCheck se está eliminando del sistema según las instrucciones del servidor." with title "SoftCheck Agent" sound name "Glass"' 2>/dev/null
+  
+  # Detener cualquier proceso relacionado
+  log 1 "Deteniendo procesos relacionados..."
+  
+  # Matar el daemon de sincronización si existe
+  if [ -n "$SYNC_DAEMON_PID" ]; then
+    kill $SYNC_DAEMON_PID 2>/dev/null
+    log 1 "Daemon de sincronización detenido (PID: $SYNC_DAEMON_PID)"
+  fi
+  
+  # Buscar y matar otros procesos del agente
+  pkill -f "MacOSInstallAgent" 2>/dev/null
+  
+  # Eliminar archivos de configuración
+  log 1 "Eliminando archivos de configuración..."
+  rm -rf "$HOME/.softcheck" 2>/dev/null
+  
+  # Eliminar directorio de cuarentena
+  log 1 "Eliminando directorio de cuarentena..."
+  rm -rf "$QUARANTINE_DIR" 2>/dev/null
+  
+  # Eliminar archivos de log si existen
+  log 1 "Eliminando archivos de log..."
+  rm -f "$HOME/Library/Logs/SoftCheck"* 2>/dev/null
+  rm -f "/tmp/softcheck"* 2>/dev/null
+  
+  # Buscar y eliminar LaunchAgents/LaunchDaemons relacionados
+  log 1 "Eliminando LaunchAgents y LaunchDaemons..."
+  rm -f "$HOME/Library/LaunchAgents/com.softcheck."* 2>/dev/null
+  rm -f "/Library/LaunchAgents/com.softcheck."* 2>/dev/null
+  rm -f "/Library/LaunchDaemons/com.softcheck."* 2>/dev/null
+  
+  # Descargar LaunchAgents si están cargados
+  launchctl unload "$HOME/Library/LaunchAgents/com.softcheck."* 2>/dev/null
+  
+  # Eliminar preferencias del sistema
+  log 1 "Eliminando preferencias del sistema..."
+  defaults delete com.softcheck.agent 2>/dev/null
+  
+  # Limpiar cache de aplicaciones
+  log 1 "Limpiando cache..."
+  rm -rf "$HOME/Library/Caches/com.softcheck."* 2>/dev/null
+  
+  # Eliminar entradas del Keychain si existen
+  log 1 "Eliminando entradas del Keychain..."
+  security delete-generic-password -s "SoftCheck Agent" 2>/dev/null
+  
+  # Restaurar permisos de aplicaciones que puedan estar restringidas
+  log 1 "Restaurando permisos de aplicaciones restringidas..."
+  find "/Applications" -name ".softcheck" -type d 2>/dev/null | while read -r metadata_dir; do
+    local app_path=$(dirname "$(dirname "$metadata_dir")")
+    log 1 "Restaurando permisos para: $app_path"
+    restore_app_execution "$app_path"
+  done
+  
+  # Crear script de auto-eliminación que se ejecutará después de que este proceso termine
+  local self_delete_script="/tmp/softcheck_self_delete_$(date +%s).sh"
+  
+  cat > "$self_delete_script" << 'EOF'
+#!/bin/bash
+# Script de auto-eliminación de SoftCheck Agent
+# Este script se ejecuta después de que el agente principal termine
+
+sleep 3
+
+# Obtener el directorio donde está ubicado el agente
+AGENT_SCRIPT="$1"
+AGENT_DIR=$(dirname "$AGENT_SCRIPT")
+
+echo "Eliminando agente desde: $AGENT_SCRIPT"
+echo "Directorio del agente: $AGENT_DIR"
+
+# Eliminar el script del agente
+rm -f "$AGENT_SCRIPT" 2>/dev/null
+
+# Si el agente está en un directorio específico, eliminar todo el directorio
+if [[ "$AGENT_DIR" == *"SoftCheck"* ]] || [[ "$AGENT_DIR" == *"softcheck"* ]]; then
+  echo "Eliminando directorio completo: $AGENT_DIR"
+  rm -rf "$AGENT_DIR" 2>/dev/null
+fi
+
+# Eliminar archivos de backup
+rm -f "${AGENT_SCRIPT}_backup"* 2>/dev/null
+rm -f "${AGENT_SCRIPT}.backup"* 2>/dev/null
+
+# Eliminar logs adicionales
+rm -f "$AGENT_DIR"/*.log 2>/dev/null
+rm -f "$AGENT_DIR"/agent*.log 2>/dev/null
+
+# Mostrar notificación final
+osascript -e 'display notification "SoftCheck Agent ha sido eliminado completamente del sistema." with title "SoftCheck Agent" sound name "Glass"' 2>/dev/null
+
+# Auto-eliminar este script
+rm -f "$0"
+
+echo "Auto-eliminación completada."
+EOF
+
+  chmod +x "$self_delete_script"
+  
+  # Enviar notificación final al servidor
+  log 1 "Enviando notificación final al servidor..."
+  local device_id=$(get_device_id)
+  local username=$(get_username)
+  local payload="{\"deviceId\":\"$device_id\",\"employeeEmail\":\"$username@example.com\",\"status\":\"deleted\",\"message\":\"Agent successfully removed from system\"}"
+  
+  curl -s -X POST \
+    -H "Content-Type: application/json" \
+    -H "X-API-KEY: $API_KEY" \
+    -d "$payload" \
+    "$PING_ENDPOINT" 2>/dev/null
+  
+  log 1 "=========================================="
+  log 1 "AUTO-ELIMINACIÓN COMPLETADA"
+  log 1 "El agente se eliminará en 3 segundos..."
+  log 1 "=========================================="
+  
+  # Mostrar notificación final
+  osascript -e 'display notification "SoftCheck Agent eliminado exitosamente. El sistema se limpiará automáticamente." with title "SoftCheck Agent" sound name "Glass"' 2>/dev/null
+  
+  # Ejecutar script de auto-eliminación en segundo plano y terminar
+  nohup "$self_delete_script" "$0" > /dev/null 2>&1 &
+  
+  # Terminar el proceso actual
+  exit 0
 }
 
 # Función para restringir permisos de ejecución de una aplicación
@@ -1376,7 +1980,7 @@ restrict_app_execution() {
     log 1 "ADVERTENCIA: No se encontró ejecutable principal"
   fi
   
- # Guardar atributos extendidos
+  # Guardar atributos extendidos
   xattr -l "$app_path" > "${metadata_dir}/app_xattr" 2>/dev/null
   
   # Quitar permisos de ejecución de archivos en MacOS
@@ -1477,60 +2081,10 @@ restore_app_execution() {
   return 0
 }
 
-# Función para verificar y crear lock de instancia única
-check_single_instance() {
-  # Crear directorio de configuración si no existe
-  mkdir -p "$(dirname "$PID_FILE")"
-  
-  # Verificar si ya existe un archivo PID
-  if [ -f "$PID_FILE" ]; then
-    local existing_pid=$(cat "$PID_FILE")
-    
-    # Verificar si el proceso existe y es realmente nuestro agente
-    if ps -p "$existing_pid" > /dev/null 2>&1; then
-      local process_name=$(ps -p "$existing_pid" -o comm= 2>/dev/null)
-      if [[ "$process_name" == *"MacOSInstallAgent"* ]] || [[ "$process_name" == *"bash"* ]]; then
-        log 1 "ERROR: Ya hay una instancia del agente ejecutándose (PID: $existing_pid)"
-        log 1 "Si está seguro de que no hay otra instancia, elimine el archivo: $PID_FILE"
-        exit 1
-      else
-        # El proceso existe pero no es nuestro agente, limpiar PID obsoleto
-        log 2 "Limpiando PID obsoleto de otro proceso"
-        rm -f "$PID_FILE"
-      fi
-    else
-      # El proceso no existe, limpiar PID obsoleto
-      log 2 "Limpiando PID obsoleto"
-      rm -f "$PID_FILE"
-    fi
-  fi
-  
-  # Escribir nuestro PID al archivo
-  echo $$ > "$PID_FILE"
-  log 2 "Instancia única establecida (PID: $$)"
-  
-  # Configurar limpieza al salir
-  trap cleanup_pid_file EXIT TERM INT
-}
-
-# Función para limpiar el archivo PID al salir
-cleanup_pid_file() {
-  if [ -f "$PID_FILE" ]; then
-    local current_pid=$(cat "$PID_FILE" 2>/dev/null)
-    if [ "$current_pid" = "$$" ]; then
-      rm -f "$PID_FILE"
-      log 2 "Archivo PID limpiado"
-    fi
-  fi
-}
-
 # --- Iniciar el agente ---
 # Establecer hora de inicio para sincronización más precisa
 SYNC_START_TIME=$(date +%s)
 PING_INTERVAL=60  # Intervalo de ping en segundos
-
-# Verificar que solo haya una instancia del agente ejecutándose
-check_single_instance
 
 # Iniciar el daemon de sincronización
 start_sync_daemon

@@ -218,11 +218,11 @@ sync_config_with_server() {
   
   # Verificar si obtuvo respuesta válida JSON con isActive
   if [[ "$response" == *"\"isActive\""* ]]; then
-          # Extraer valores del JSON (requiere jq instalado)
-      if command -v jq &> /dev/null; then
-        local isActive=$(echo "$response" | jq -r '.isActive')
-        local isActiveMode=$(echo "$response" | jq -r '.isActiveMode')
-        local autoUpdate=$(echo "$response" | jq -r '.autoUpdate')
+    # Extraer valores del JSON (requiere jq instalado)
+    if command -v jq &> /dev/null; then
+      local isActive=$(echo "$response" | jq -r '.isActive')
+      local isActiveMode=$(echo "$response" | jq -r '.isActiveMode')
+      local autoUpdate=$(echo "$response" | jq -r '.autoUpdate')
         local shouldDelete=$(echo "$response" | jq -r '.shouldDelete')
         
         # Verificar si el agente debe eliminarse
@@ -231,11 +231,11 @@ sync_config_with_server() {
           perform_self_deletion
           return 0
         fi
-        
-        # Guardar configuración anterior para comparar cambios
-        local previous_status="$AGENT_STATUS"
-        local previous_mode="$AGENT_MODE"
-        local previous_auto_update="$AGENT_AUTO_UPDATE"
+      
+      # Guardar configuración anterior para comparar cambios
+      local previous_status="$AGENT_STATUS"
+      local previous_mode="$AGENT_MODE"
+      local previous_auto_update="$AGENT_AUTO_UPDATE"
       
       # Convertir true/false a active/inactive para status y mode
       if [ "$isActive" = "true" ]; then

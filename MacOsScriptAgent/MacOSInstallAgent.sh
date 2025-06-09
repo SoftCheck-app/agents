@@ -14,11 +14,14 @@
 # Variables de configuración
 #BACKEND_URL="http://34.175.247.105:4002/api"
 BACKEND_URL="http://localhost:4002/api"
-VERIFICATION_ENDPOINT="$BACKEND_URL/validate_software"
-API_KEY="305f98c40f6ab0224759d1725147ca1b"  # Debe coincidir con el valor en la base de datos
+API_KEY="8614b11fc82969369d0980fa37f03381"  # Debe coincidir con el valor en la base de datos
+# TEAM_NAME se resuelve automáticamente en el servidor usando la API key
 APPS_DIRECTORY="/Applications"
 SCAN_INTERVAL=1  # segundos entre escaneos - verificar aplicaciones pendientes cada 10 segundos
 QUARANTINE_DIR="$HOME/Library/Application Support/AppQuarantine"
+
+# Endpoints globales - el servidor resolverá el team automáticamente usando la API key
+VERIFICATION_ENDPOINT="$BACKEND_URL/validate_software"
 SETTINGS_ENDPOINT="$BACKEND_URL/settings"  # Endpoint para obtener ajustes
 STATUS_ENDPOINT="$BACKEND_URL/agents/status"
 PING_ENDPOINT="$BACKEND_URL/agents/ping"  # Endpoint para enviar pings
@@ -129,6 +132,7 @@ print_agent_settings() {
   log 1 " Status     : ${AGENT_STATUS} ($([ "$AGENT_STATUS" = "active" ] && echo "ACTIVO" || echo "INACTIVO"))"
   log 1 " Mode       : ${AGENT_MODE} ($([ "$AGENT_MODE" = "active" ] && echo "ACTIVO" || echo "PASIVO"))"
   log 1 " Device ID  : $(get_device_id)"
+  log 1 " Team       : Resuelto automáticamente por API key"
   log 1 " Servidor   : ${BACKEND_URL}"
   log 1 " Conexión   : ${connection_status}"
   log 1 "========================================"
@@ -141,6 +145,171 @@ setup_config_dir() {
   log 2 "Carpeta de configuración configurada: $HOME/.softcheck"
 }
 
+# Verificar si un team existe en el servidor
+verify_team_exists() {
+  local team_to_verify="$1"
+  
+  log 2 "Verificando si el team '$team_to_verify' existe..."
+  
+  # Intentar acceder a los settings del team
+  local verify_response=$(curl -s -X GET \
+    -H "Content-Type: application/json" \
+    -H "X-API-KEY: $API_KEY" \
+    -H "Accept: application/json" \
+    -H "User-Agent: SoftCheck-Agent/1.0" \
+    --connect-timeout 15 \
+    "$BACKEND_URL/teams/$team_to_verify/settings")
+  
+  # Si no es HTML, el team probablemente existe
+  if [[ "$verify_response" != *"DOCTYPE html"* ]] && [[ "$verify_response" != *"<html"* ]] && [[ "$verify_response" != *"404"* ]]; then
+    log 2 "Team '$team_to_verify' verificado exitosamente"
+    return 0
+  else
+    log 1 "Team '$team_to_verify' no existe o no es accesible"
+    return 1
+  fi
+}
+
+# Actualizar endpoints dinámicamente basado en el team
+update_endpoints() {
+  VERIFICATION_ENDPOINT="$BACKEND_URL/teams/$TEAM_NAME/validate_software"
+  SETTINGS_ENDPOINT="$BACKEND_URL/teams/$TEAM_NAME/settings"
+  STATUS_ENDPOINT="$BACKEND_URL/teams/$TEAM_NAME/agents/status"
+  PING_ENDPOINT="$BACKEND_URL/teams/$TEAM_NAME/agents/ping"
+  SOFTWARE_STATUS_ENDPOINT="$BACKEND_URL/teams/$TEAM_NAME/software/status"
+  
+  log 2 "Endpoints actualizados para el equipo: $TEAM_NAME"
+  
+  # Verificar que el team realmente existe
+  if ! verify_team_exists "$TEAM_NAME"; then
+    log 1 "ADVERTENCIA: El team '$TEAM_NAME' podría no existir en el servidor"
+    log 1 "Use '$0 --list-teams' para ver teams disponibles"
+  fi
+}
+
+# Verificar autenticación y diagnosticar problemas
+diagnose_authentication() {
+  log 1 "=========================================="
+  log 1 "DIAGNÓSTICO DE AUTENTICACIÓN"
+  log 1 "=========================================="
+  
+  log 1 "API Key configurada: ${API_KEY:0:8}..."
+  log 1 "Team: Resuelto automáticamente por API key"
+  log 1 "Backend URL: $BACKEND_URL"
+  
+  # Probar endpoint básico sin autenticación
+  local health_response=$(curl -s --connect-timeout 10 "$BACKEND_URL/health" 2>/dev/null || echo "CONNECTION_FAILED")
+  
+  if [ "$health_response" = "CONNECTION_FAILED" ]; then
+    log 1 "❌ ERROR: No se puede conectar al servidor backend"
+    log 1 "Verifique que el servidor esté ejecutándose en $BACKEND_URL"
+  else
+    log 1 "✅ Conexión al servidor: OK"
+  fi
+  
+  # Probar autenticación con diferentes métodos
+  log 1 "Probando autenticación por API key..."
+  
+  local auth_test_response=$(curl -s -X GET \
+    -H "X-API-KEY: $API_KEY" \
+    -H "Accept: application/json" \
+    --connect-timeout 10 \
+    "$BACKEND_URL/agents/ping" 2>/dev/null)
+  
+  if [[ "$auth_test_response" == *"/auth/login"* ]]; then
+    log 1 "❌ Los endpoints están protegidos por NextAuth (autenticación web)"
+    log 1 "SOLUCIÓN: Crear endpoints específicos para agentes que soporten API keys"
+    log 1 ""
+    log 1 "Endpoints necesarios en el SaaS:"
+    log 1 "  • /api/agents/ping (sin NextAuth, solo API key)"
+    log 1 "  • /api/agents/validate-software (sin NextAuth, solo API key)"
+    log 1 "  • /api/agents/settings (sin NextAuth, solo API key)"
+    log 1 "  • /api/agents/detect-team (sin NextAuth, solo API key)"
+  elif [[ "$auth_test_response" == *"["* ]] || [[ "$auth_test_response" == *"{"* ]]; then
+    log 1 "✅ Autenticación por API key: OK"
+  else
+    log 1 "❓ Respuesta inesperada del servidor: $auth_test_response"
+  fi
+  
+  log 1 "=========================================="
+}
+
+# Generar código de solución para el backend
+generate_backend_solution() {
+  local team_name="$1"
+  
+  log 1 "=========================================="
+  log 1 "CÓDIGO DE SOLUCIÓN PARA EL BACKEND"
+  log 1 "=========================================="
+  log 1 ""
+  log 1 "Archivo: pages/api/agents/ping.ts"
+  log 1 "Problema: El modelo Employee requiere campo 'team' obligatorio"
+  log 1 ""
+  log 1 "SOLUCIÓN (reemplazar la sección de creación de empleado):"
+  log 1 ""
+  
+  cat << 'EOF'
+// Extraer teamName del payload
+const { teamName = 'default', deviceId, employeeEmail, status } = req.body;
+
+// Buscar empleado existente
+let employee = await prisma.employee.findUnique({
+  where: { deviceId },
+  include: { team: true }
+});
+
+if (!employee) {
+  // Buscar o crear el team
+  let team = await prisma.team.findUnique({
+    where: { slug: teamName }
+  });
+
+  if (!team) {
+    log.info(`Creando nuevo team: ${teamName}`);
+    team = await prisma.team.create({
+      data: { 
+        name: teamName.charAt(0).toUpperCase() + teamName.slice(1),
+        slug: teamName 
+      }
+    });
+  }
+
+  // Crear empleado con relación al team
+  const genericEmail = `device_${deviceId}@unknown.com`;
+  
+  employee = await prisma.employee.create({
+    data: {
+      name: `Device ${deviceId}`,
+      email: genericEmail,
+      department: 'Unassigned',
+      role: 'MEMBER',
+      status: 'active',
+      deviceId: deviceId,
+      isActive: true,
+      lastPing: new Date(),
+      team: { connect: { id: team.id } }  // ← SOLUCIÓN: Conectar al team
+    },
+    include: { team: true }
+  });
+  
+  log.info(`Empleado creado automáticamente: ${employee.email} en team: ${team.name}`);
+} else {
+  // Actualizar lastPing del empleado existente
+  employee = await prisma.employee.update({
+    where: { id: employee.id },
+    data: { lastPing: new Date(), isActive: true },
+    include: { team: true }
+  });
+}
+EOF
+
+  log 1 ""
+  log 1 "=========================================="
+  log 1 "ARCHIVO COMPLETO CORREGIDO:"
+  log 1 "https://gist.github.com/example/backend-ping-solution"
+  log 1 "=========================================="
+}
+
 # Verificar y cargar configuración guardada o crearla si no existe
 load_or_create_config() {
   local device_id=$(get_device_id)
@@ -149,6 +318,34 @@ load_or_create_config() {
   # Inicializar variable para la última sincronización exitosa
   LAST_SYNC_TIME=0
   
+  # Intentar detectar el team automáticamente desde el servidor primero
+  # No fallar si no se puede detectar, solo usarlo si está disponible
+  if ! detect_team_from_server; then
+    log 2 "No se pudo detectar team automáticamente. Intentando con lista de teams..."
+    
+    # Intentar obtener lista de teams disponibles como fallback
+    local teams_response=$(curl -s -X GET \
+      -H "Content-Type: application/json" \
+      -H "X-API-KEY: $API_KEY" \
+      -H "Accept: application/json" \
+      -H "User-Agent: SoftCheck-Agent/1.0" \
+      --connect-timeout 30 \
+      "$BACKEND_URL/teams")
+    
+    if command -v jq &> /dev/null && echo "$teams_response" | jq empty 2>/dev/null; then
+      local first_team=$(echo "$teams_response" | jq -r '.[0].slug // .[0].name // ""' 2>/dev/null)
+      if [ -n "$first_team" ] && [ "$first_team" != "null" ] && [ "$first_team" != "default" ]; then
+        log 1 "Usando el primer team disponible como fallback: $first_team"
+        TEAM_NAME="$first_team"
+        update_endpoints
+      else
+        log 1 "ADVERTENCIA: No hay teams válidos disponibles. El agente podría no funcionar correctamente con team: $TEAM_NAME"
+      fi
+    else
+      log 1 "ADVERTENCIA: No se pudo obtener lista de teams. Continuando con team: $TEAM_NAME"
+    fi
+  fi
+  
   if [ -f "$AGENT_CONFIG_FILE" ]; then
     # Verificar si el archivo de configuración es válido
     if jq -e . "$AGENT_CONFIG_FILE" >/dev/null 2>&1; then
@@ -156,6 +353,14 @@ load_or_create_config() {
       AGENT_STATUS=$(jq -r '.status // "active"' "$AGENT_CONFIG_FILE")
       AGENT_MODE=$(jq -r '.mode // "active"' "$AGENT_CONFIG_FILE")
       AGENT_AUTO_UPDATE=$(jq -r '.autoUpdate // true' "$AGENT_CONFIG_FILE")
+      
+      # Cargar team name si está disponible en la configuración
+      local saved_team=$(jq -r '.teamName // "default"' "$AGENT_CONFIG_FILE")
+      if [ -n "$saved_team" ] && [ "$saved_team" != "null" ]; then
+        TEAM_NAME="$saved_team"
+        log 2 "Team cargado desde configuración: $TEAM_NAME"
+        update_endpoints
+      fi
       
       log 2 "Configuración cargada desde archivo local"
       print_agent_settings
@@ -200,20 +405,66 @@ sync_config_with_server() {
   
   log 2 "Sincronizando configuración con el servidor..."
   log 2 "Device ID: $device_id"
+  log 2 "Intentando endpoint: $SETTINGS_ENDPOINT"
   
   # Obtener configuración desde el servidor con cabeceras mejoradas
   local response=$(curl -s -X GET \
     -H "Content-Type: application/json" \
     -H "X-API-KEY: $API_KEY" \
+    -H "Authorization: Bearer $API_KEY" \
+    -H "X-Auth-Token: $API_KEY" \
     -H "Accept: application/json" \
     -H "User-Agent: SoftCheck-Agent/1.0" \
+    -H "Cache-Control: no-cache" \
     --connect-timeout 30 \
     "$SETTINGS_ENDPOINT")
   
-  # Detectar errores HTTP comunes
-  if [[ "$response" == *"DOCTYPE html"* ]] || [[ "$response" == *"login"* ]] || [[ "$response" == *"<html"* ]]; then
-    log 1 "ERROR: Se recibió una página HTML en lugar de JSON. Posible problema de autenticación."
+  # Detectar errores HTTP comunes y redirecciones de login
+  if [[ "$response" == *"DOCTYPE html"* ]] || [[ "$response" == *"/auth/login"* ]] || [[ "$response" == *"callbackUrl="* ]] || [[ "$response" == *"<html"* ]] || [[ "$response" == *"404"* ]] || [[ "$response" == *"Not Found"* ]]; then
+    if [[ "$response" == *"/auth/login"* ]]; then
+      log 1 "ERROR: Endpoint requiere autenticación web. Intentando endpoint global con API key..."
+    else
+      log 1 "ERROR: Endpoint del team no válido o no existe. Intentando endpoint global..."
+    fi
+    
+    # Intentar con endpoint global (sin team)
+    local global_endpoint="$BACKEND_URL/settings"
+    log 2 "Intentando endpoint global: $global_endpoint"
+    
+    response=$(curl -s -X GET \
+      -H "Content-Type: application/json" \
+      -H "X-API-KEY: $API_KEY" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "X-Auth-Token: $API_KEY" \
+      -H "Accept: application/json" \
+      -H "User-Agent: SoftCheck-Agent/1.0" \
+      -H "Cache-Control: no-cache" \
+      --connect-timeout 30 \
+      "$global_endpoint")
+    
+    # Verificar si el endpoint global funciona
+    if [[ "$response" == *"DOCTYPE html"* ]] || [[ "$response" == *"/auth/login"* ]] || [[ "$response" == *"callbackUrl="* ]] || [[ "$response" == *"<html"* ]]; then
+      if [[ "$response" == *"/auth/login"* ]]; then
+        log 1 "ERROR: También el endpoint global requiere autenticación web."
+        log 1 "PROBLEMA CRÍTICO: Los endpoints no están configurados para API keys."
+        log 1 "El SaaS necesita endpoints que soporten autenticación por API key para agentes."
+      else
+        log 1 "ERROR: También falló el endpoint global. Posible problema de servidor."
+      fi
     return 1
+    fi
+    
+    # Si el endpoint global funciona, intentar detectar el team correcto
+    if [[ "$response" == *"\"isActive\""* ]]; then
+      log 1 "Endpoint global funcionó. Intentando redetectar el team correcto..."
+      if detect_team_from_server; then
+        log 1 "Team redetectado exitosamente. Reintentando sincronización..."
+        return $(sync_config_with_server)
+      else
+        log 1 "No se pudo detectar team válido. Continuando con configuración global..."
+        # Continuar procesando con la respuesta del endpoint global
+      fi
+    fi
   fi
   
   # Verificar si obtuvo respuesta válida JSON con isActive
@@ -273,6 +524,82 @@ sync_config_with_server() {
   fi
 }
 
+# Función para detectar automáticamente el team del dispositivo
+detect_team_from_server() {
+  local device_id=$(get_device_id)
+  local username=$(get_username)
+  
+  log 2 "Detectando equipo desde el servidor..."
+  
+  # Endpoint para detectar el team del dispositivo
+  local detect_endpoint="$BACKEND_URL/agents/detect-team"
+  log 2 "Endpoint de detección: $detect_endpoint"
+  
+  # Construir payload para detectar el team
+  local payload="{\"deviceId\":\"$(escape_json_value "$device_id")\",\"username\":\"$(escape_json_value "$username")\"}"
+  
+  # Realizar solicitud al servidor
+  local response=$(curl -s -X POST \
+    -H "Content-Type: application/json" \
+    -H "X-API-KEY: $API_KEY" \
+    -H "Accept: application/json" \
+    -H "User-Agent: SoftCheck-Agent/1.0" \
+    --connect-timeout 30 \
+    -d "$payload" \
+    "$detect_endpoint")
+  
+  log 2 "Respuesta de detección de team: $response"
+  
+  # Verificar si es HTML (error 404 o similar)
+  if [[ "$response" == *"DOCTYPE html"* ]] || [[ "$response" == *"<html"* ]] || [[ "$response" == *"404"* ]]; then
+    log 1 "El endpoint de detección de team no existe. Intentando método alternativo..."
+    
+    # Método alternativo: intentar obtener lista de teams disponibles
+    local teams_endpoint="$BACKEND_URL/teams"
+    log 2 "Intentando obtener lista de teams: $teams_endpoint"
+    
+    local teams_response=$(curl -s -X GET \
+      -H "Content-Type: application/json" \
+      -H "X-API-KEY: $API_KEY" \
+      -H "Accept: application/json" \
+      -H "User-Agent: SoftCheck-Agent/1.0" \
+      --connect-timeout 30 \
+      "$teams_endpoint")
+    
+    if command -v jq &> /dev/null && echo "$teams_response" | jq empty 2>/dev/null; then
+      local first_team=$(echo "$teams_response" | jq -r '.[0].slug // .[0].name // ""' 2>/dev/null)
+      if [ -n "$first_team" ] && [ "$first_team" != "null" ]; then
+        log 1 "Usando el primer team disponible: $first_team"
+        TEAM_NAME="$first_team"
+        update_endpoints
+        return 0
+      fi
+    fi
+    
+    log 1 "No se encontraron teams válidos. Manteniendo team actual: $TEAM_NAME"
+    return 1
+  fi
+  
+  # Analizar respuesta para obtener el team
+  if command -v jq &> /dev/null && echo "$response" | jq empty 2>/dev/null; then
+    local detected_team=$(echo "$response" | jq -r '.teamName // .team // ""')
+    local success=$(echo "$response" | jq -r '.success // false')
+    
+    if [ "$success" = "true" ] && [ -n "$detected_team" ] && [ "$detected_team" != "null" ]; then
+      log 1 "Equipo detectado desde el servidor: $detected_team"
+      TEAM_NAME="$detected_team"
+      update_endpoints
+      return 0
+    else
+      log 1 "Respuesta del servidor no contiene team válido"
+      return 1
+    fi
+  else
+    log 1 "Respuesta del servidor no es JSON válido"
+    return 1
+  fi
+}
+
 # Función para actualizar el archivo de configuración
 update_config_file() {
   local device_id="$1"
@@ -286,6 +613,7 @@ update_config_file() {
     \"autoUpdate\": $AGENT_AUTO_UPDATE,
     \"deviceId\": \"$device_id\",
     \"username\": \"$username\",
+    \"teamName\": \"$TEAM_NAME\",
     \"lastSync\": \"$timestamp\"
   }"
   
@@ -295,7 +623,7 @@ update_config_file() {
   # También guardar a un archivo de respaldo
   echo "$config" > "${AGENT_CONFIG_FILE}.backup"
   
-  log 2 "Archivo de configuración actualizado"
+  log 2 "Archivo de configuración actualizado (Team: $TEAM_NAME)"
 }
 
 # Función para verificar actualizaciones del agente
@@ -524,7 +852,7 @@ build_software_json() {
   local escaped_install_date=$(escape_json_value "$install_date")
   local escaped_software_id=$(escape_json_value "$software_id")
   
-  # Crear objeto JSON base con todos los datos escapados
+  # Crear objeto JSON base con todos los datos escapados - el servidor resolverá el team automáticamente
   local json="{
     \"device_id\": \"$escaped_device_id\",
     \"user_id\": \"$escaped_username\",
@@ -629,10 +957,74 @@ verify_software() {
   local response=$(cat "$temp_response_file")
   local curl_error=$(cat "$temp_headers_file")
   
+  # Verificar si recibimos HTML (endpoint no existe)
+  if [[ "$response" == *"DOCTYPE html"* ]] || [[ "$response" == *"<html"* ]] || [[ "$response" == *"404"* ]]; then
+    log 1 "DEBUG - Endpoint del team no existe. Intentando endpoint global..."
+    
+    # Intentar con endpoint global
+    local global_verification_endpoint="$BACKEND_URL/validate_software"
+    log 1 "DEBUG - Intentando endpoint global: $global_verification_endpoint"
+    
+    curl -s -X POST \
+      -H "Content-Type: application/json" \
+      -H "X-API-KEY: $API_KEY" \
+      -H "Accept: application/json" \
+      -H "User-Agent: SoftCheck-Agent/1.0" \
+      -d "$json" \
+      "$global_verification_endpoint" \
+      2> "$temp_headers_file" \
+      > "$temp_response_file"
+    
+    curl_exit_code=$?
+    response=$(cat "$temp_response_file")
+    curl_error=$(cat "$temp_headers_file")
+    
+    log 1 "DEBUG - Respuesta del endpoint global: $response"
+  fi
+  
   # DEBUG: Mostrar respuesta del servidor
   log 1 "DEBUG - curl exit code: $curl_exit_code"
   log 1 "DEBUG - curl error: $curl_error"
   log 1 "DEBUG - Respuesta del servidor: $response"
+  
+  # Detectar redirección de login (problema de autenticación)
+  if [[ "$response" == *"/auth/login"* ]] || [[ "$response" == *"callbackUrl="* ]]; then
+    log 1 "ERROR: Recibida redirección de login. El endpoint requiere autenticación web en lugar de API key."
+    log 1 "Esto indica que el endpoint no está configurado para aceptar API keys."
+    log 1 "Verificar:"
+    log 1 "  1. Que el endpoint soporte autenticación por API key"
+    log 1 "  2. Que la API_KEY sea válida: ${API_KEY:0:8}..."
+    log 1 "  3. Que el middleware de autenticación esté configurado correctamente"
+    
+    # Intentar con headers adicionales de autenticación
+    log 1 "Intentando con headers de autenticación adicionales..."
+    
+    curl -s -X POST \
+      -H "Content-Type: application/json" \
+      -H "X-API-KEY: $API_KEY" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "X-Auth-Token: $API_KEY" \
+      -H "Accept: application/json" \
+      -H "User-Agent: SoftCheck-Agent/1.0" \
+      -H "Cache-Control: no-cache" \
+      -d "$json" \
+      "$VERIFICATION_ENDPOINT" \
+      2> "$temp_headers_file" \
+      > "$temp_response_file"
+    
+    curl_exit_code=$?
+    response=$(cat "$temp_response_file")
+    curl_error=$(cat "$temp_headers_file")
+    
+    log 1 "DEBUG - Respuesta con headers adicionales: $response"
+    
+    # Si aún recibimos redirección, el endpoint no soporta API keys
+    if [[ "$response" == *"/auth/login"* ]]; then
+      log 1 "ERROR CRÍTICO: El endpoint no soporta autenticación por API key."
+      log 1 "Necesita configurar endpoints específicos para API en el SaaS."
+      return 1
+    fi
+  fi
   
   # Limpiar archivos temporales
   rm -f "$temp_response_file" "$temp_headers_file"
@@ -1592,6 +1984,99 @@ clear_pending_apps_list() {
   log 2 "Lista de aplicaciones pendientes limpiada"
 }
 
+# FUNCIÓN COMENTADA: Enviar inventario inicial de software al servidor
+# Esta función ha sido deshabilitada para que el agente solo procese nuevos softwares
+# instalados después de su primera ejecución, no los preexistentes en el sistema
+#
+# send_initial_software_inventory() {
+#   log 1 "======================================"
+#   log 1 "ENVIANDO INVENTARIO INICIAL DE SOFTWARE"
+#   log 1 "======================================"
+#   
+#   # Obtener lista de todas las aplicaciones instaladas
+#   local all_apps=$(get_current_apps)
+#   local app_count=$(echo "$all_apps" | wc -l | tr -d ' ')
+#   
+#   log 1 "Se encontraron $app_count aplicaciones instaladas"
+#   
+#   if [ "$app_count" -eq 0 ]; then
+#     log 1 "No se encontraron aplicaciones para enviar"
+#     return 0
+#   fi
+#   
+#   # Obtener información común del dispositivo
+#   local username=$(get_username)
+#   local device_id=$(get_device_id)
+#   
+#   local success_count=0
+#   local error_count=0
+#   
+#   # Procesar cada aplicación encontrada
+#   while IFS= read -r app; do
+#     if [ -n "$app" ]; then
+#       local app_name="${app%.app}"
+#       local app_path="$APPS_DIRECTORY/$app"
+#       
+#       # Verificar que la aplicación existe y es válida
+#       if [ -d "$app_path" ] && [ -d "$app_path/Contents" ]; then
+#         log 1 "Procesando aplicación inicial: $app_name"
+#         
+#         # Recopilar información completa de la aplicación
+#         local app_version=$(get_app_version "$app_path")
+#         local vendor=$(get_app_vendor "$app_path")
+#         local install_date=$(get_install_date "$app_path")
+#         local is_running=$(is_app_running "$app_name")
+#         local digital_signature=$(check_digital_signature "$app_path")
+#         local sha256="no_disponible"
+#         
+#         # Calcular SHA256 del ejecutable principal si es posible
+#         local main_executable=$(find_main_executable "$app_path")
+#         if [ -n "$main_executable" ]; then
+#           sha256=$(calculate_sha256 "$main_executable")
+#         fi
+#         
+#         log 2 "Enviando datos de $app_name al servidor..."
+#         log 2 "  - Versión: $app_version"
+#         log 2 "  - Vendor: $vendor"
+#         log 2 "  - Fecha instalación: $install_date"
+#         log 2 "  - SHA256: ${sha256:0:16}..."
+#         
+#         # Enviar aplicación al servidor usando la función de verificación existente
+#         if verify_software "$app_name" "$app_version" "$app_path" "$sha256" "$username" "$device_id" "$vendor" "$install_date" "$is_running" "$digital_signature"; then
+#           log 2 "✓ $app_name enviado exitosamente"
+#           success_count=$((success_count + 1))
+#         else
+#           log 1 "✗ Error al enviar $app_name"
+#           error_count=$((error_count + 1))
+#         fi
+#         
+#         # Pequeño delay para no sobrecargar el servidor
+#         sleep 0.5
+#       else
+#         log 1 "ADVERTENCIA: $app_path no es una aplicación macOS válida"
+#         error_count=$((error_count + 1))
+#       fi
+#     fi
+#   done < <(echo "$all_apps")
+#   
+#   log 1 "======================================"
+#   log 1 "INVENTARIO INICIAL COMPLETADO"
+#   log 1 "======================================"
+#   log 1 "Aplicaciones enviadas exitosamente: $success_count"
+#   log 1 "Errores encontrados: $error_count"
+#   log 1 "Total procesadas: $((success_count + error_count))"
+#   log 1 "======================================"
+#   
+#   # Mostrar notificación de finalización
+#   if [ $error_count -eq 0 ]; then
+#     log 1 "Todos los softwares fueron registrados exitosamente en el servidor"
+#   else
+#     log 1 "Se completó el inventario con algunos errores. Revisar logs para detalles."
+#   fi
+#   
+#   return 0
+# }
+
 # Función principal que ejecuta el ciclo de monitoreo
 run_monitor() {
   log 1 "Iniciando monitor de instalaciones..."
@@ -1608,6 +2093,17 @@ run_monitor() {
   
   # Verificar actualizaciones del agente
   check_for_updates
+  
+  # COMENTADO: Enviar inventario inicial de software
+  # Esta funcionalidad ha sido deshabilitada para que el agente solo bloquee
+  # nuevos softwares instalados después de su primera ejecución, no los preexistentes
+  # if [ "$AGENT_STATUS" = "active" ]; then
+  #   send_initial_software_inventory
+  # else
+  #   log 1 "Agente inactivo - omitiendo inventario inicial"
+  # fi
+  
+  log 1 "Inventario inicial omitido - solo se procesarán nuevas instalaciones"
   
   # Variables para controlar el estado del monitor
   local monitoring_active=true
@@ -1677,20 +2173,22 @@ ping_server() {
   local username=$(get_username)
   
   log 2 "Enviando ping al servidor..."
+  log 2 "Endpoint de ping: $PING_ENDPOINT"
   
   # Escapar valores para JSON
   local escaped_device_id=$(escape_json_value "$device_id")
   local escaped_username=$(escape_json_value "$username")
   local escaped_status=$(escape_json_value "$AGENT_STATUS")
-  
-  # Construir payload con información del agente usando valores escapados
-  local payload="{\"deviceId\":\"$escaped_device_id\",\"employeeEmail\":\"$escaped_username@example.com\",\"status\":\"$escaped_status\"}"
+  # Construir payload simplificado - el servidor resolverá el team automáticamente usando la API key
+  local payload="{
+    \"deviceId\":\"$escaped_device_id\",
+    \"employeeEmail\":\"$escaped_username@example.com\",
+    \"status\":\"$escaped_status\"
+  }"
   
   # Debug: mostrar valores antes de enviar
-  log 2 "DEBUG - device_id original: '$device_id'"
-  log 2 "DEBUG - device_id escapado: '$escaped_device_id'"
-  log 2 "DEBUG - username original: '$username'"
-  log 2 "DEBUG - username escapado: '$escaped_username'"
+  log 2 "DEBUG - device_id: '$device_id'"
+  log 2 "DEBUG - username: '$username'"
   log 2 "DEBUG - status: '$AGENT_STATUS'"
   log 2 "DEBUG - payload JSON: '$payload'"
   
@@ -1706,16 +2204,115 @@ ping_server() {
   local ping_response=$(curl -s -X POST \
     -H "Content-Type: application/json" \
     -H "X-API-KEY: $API_KEY" \
+    -H "Authorization: Bearer $API_KEY" \
+    -H "X-Auth-Token: $API_KEY" \
     -H "Accept: application/json" \
     -H "User-Agent: SoftCheck-Agent/1.0" \
+    -H "Cache-Control: no-cache" \
     -d "$payload" \
     "$PING_ENDPOINT")
   
   # Debug: mostrar respuesta del servidor
   log 2 "DEBUG - ping response: '$ping_response'"
   
+  # Verificar si recibimos HTML (endpoint no existe) o redirección de login
+  if [[ "$ping_response" == *"DOCTYPE html"* ]] || [[ "$ping_response" == *"<html"* ]] || [[ "$ping_response" == *"404"* ]] || [[ "$ping_response" == *"Not Found"* ]] || [[ "$ping_response" == *"/auth/login"* ]] || [[ "$ping_response" == *"callbackUrl="* ]]; then
+    if [[ "$ping_response" == *"/auth/login"* ]]; then
+      log 1 "FALLO: Endpoint de ping requiere autenticación web en lugar de API key"
+    else
+      log 1 "FALLO: Endpoint de ping del team '$TEAM_NAME' no existe o devolvió 404"
+    fi
+    log 1 "Respuesta recibida: $ping_response"
+    
+    # Si el team es "default", significa que no hemos detectado un team válido
+    if [ "$TEAM_NAME" = "default" ]; then
+      log 1 "ERROR CRÍTICO: Team 'default' no es válido en el SaaS. Necesita configurar un team real."
+      log 1 "Use: $0 --team NOMBRE_DEL_TEAM_REAL"
+      log 1 "O configure el endpoint /api/agents/detect-team en el servidor"
+      return 1
+    fi
+    
+    # Si tenemos un team específico pero falló, intentar redetectar
+    log 1 "Intentando redetectar team válido..."
+    if detect_team_from_server; then
+      log 1 "Team redetectado: $TEAM_NAME. Reintentando ping..."
+      return $(ping_server)  # Recursiva para reintentar con el nuevo team
+    fi
+    
+    # Como último recurso, intentar con endpoint global (aunque probablemente no exista)
+    local global_ping_endpoint="$BACKEND_URL/agents/ping"
+    log 1 "ÚLTIMO RECURSO: Intentando endpoint global: $global_ping_endpoint"
+    
+    ping_response=$(curl -s -X POST \
+      -H "Content-Type: application/json" \
+      -H "X-API-KEY: $API_KEY" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "X-Auth-Token: $API_KEY" \
+      -H "Accept: application/json" \
+      -H "User-Agent: SoftCheck-Agent/1.0" \
+      -H "Cache-Control: no-cache" \
+      -d "$payload" \
+      "$global_ping_endpoint")
+    
+    log 2 "DEBUG - ping global response: '$ping_response'"
+    
+    # Si el global también falla, es un error crítico
+    if [[ "$ping_response" == *"DOCTYPE html"* ]] || [[ "$ping_response" == *"404"* ]] || [[ "$ping_response" == *"/auth/login"* ]]; then
+      if [[ "$ping_response" == *"/auth/login"* ]]; then
+        log 1 "ERROR CRÍTICO: Los endpoints requieren autenticación web (NextAuth.js)."
+        log 1 "SOLUCIÓN NECESARIA: Crear endpoints específicos para API keys en el SaaS."
+        log 1 "Ejemplo: /api/agents/ping (sin protección NextAuth, solo API key)"
+      else
+        log 1 "ERROR CRÍTICO: Ni los endpoints del team ni el global funcionan."
+      fi
+      log 1 "Verifique:"
+      log 1 "  1. Que el team '$TEAM_NAME' existe en el SaaS"
+      log 1 "  2. Que los endpoints están configurados para API keys"
+      log 1 "  3. Que la API_KEY es válida: ${API_KEY:0:8}..."
+      log 1 "  4. Que no hay middleware NextAuth protegiendo los endpoints de API"
+      return 1
+    fi
+  fi
+  
+  # Detectar error específico de Prisma por team faltante
+  if [[ "$ping_response" == *"Argument \`team\` is missing"* ]] || [[ "$ping_response" == *"PrismaClientValidationError"* ]] || [[ "$ping_response" == *"TeamCreateWithoutEmployeesInput"* ]]; then
+    log 1 "ERROR CRÍTICO: El modelo Employee en el SaaS requiere un campo 'team' obligatorio"
+    log 1 "Respuesta del servidor: $ping_response"
+    log 1 ""
+    log 1 "SOLUCIÓN EN EL BACKEND (pages/api/agents/ping.ts):"
+    log 1 "El código necesita encontrar o crear el team antes de crear el empleado:"
+    log 1 ""
+    log 1 "// Buscar o crear el team"
+    log 1 "let team = await prisma.team.findUnique({"
+    log 1 "  where: { slug: teamName }"
+    log 1 "});"
+    log 1 ""
+    log 1 "if (!team) {"
+    log 1 "  team = await prisma.team.create({"
+    log 1 "    data: { name: teamName, slug: teamName }"
+    log 1 "  });"
+    log 1 "}"
+    log 1 ""
+    log 1 "// Crear empleado con relación al team"
+    log 1 "employee = await prisma.employee.create({"
+    log 1 "  data: {"
+    log 1 "    name: \`Device \${deviceId}\`,"
+    log 1 "    email: genericEmail,"
+    log 1 "    department: 'Unassigned',"
+    log 1 "    role: 'MEMBER',"
+    log 1 "    status: 'active',"
+    log 1 "    deviceId: deviceId,"
+    log 1 "    isActive: true,"
+    log 1 "    lastPing: new Date(),"
+    log 1 "    team: { connect: { id: team.id } }  // ← Conexión correcta"
+    log 1 "  }"
+    log 1 "});"
+    log 1 ""
+    return 1
+  fi
+  
   # Verificar si la respuesta fue exitosa
-  if [[ "$ping_response" == *"\"success\":true"* ]]; then
+  if [[ "$ping_response" == *"\"success\":true"* ]] || [[ "$ping_response" == *"\"status\":\"ok\""* ]]; then
     # Actualizar la última sincronización exitosa
     LAST_SYNC_TIME=$(date +%s)
     
@@ -2081,7 +2678,72 @@ restore_app_execution() {
   return 0
 }
 
+# Función para procesar argumentos de línea de comandos
+process_command_line_args() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --team)
+        TEAM_NAME="$2"
+        log 1 "Team configurado desde línea de comandos: $TEAM_NAME"
+        update_endpoints
+        shift 2
+        ;;
+      --diagnose)
+        echo "Ejecutando diagnóstico de conexión y autenticación..."
+        diagnose_authentication
+        exit 0
+        ;;
+      --list-teams)
+        echo "Obteniendo lista de teams disponibles..."
+        local teams_response=$(curl -s -X GET \
+          -H "Content-Type: application/json" \
+          -H "X-API-KEY: $API_KEY" \
+          -H "Accept: application/json" \
+          -H "User-Agent: SoftCheck-Agent/1.0" \
+          --connect-timeout 30 \
+          "$BACKEND_URL/teams")
+        
+        if command -v jq &> /dev/null && echo "$teams_response" | jq empty 2>/dev/null; then
+          echo "Teams disponibles:"
+          echo "$teams_response" | jq -r '.[] | "  - \(.slug // .name) (\(.name // .slug))"' 2>/dev/null || echo "  No se pudieron parsear los teams"
+        else
+          echo "Error al obtener teams o respuesta no válida:"
+          echo "$teams_response"
+        fi
+        exit 0
+        ;;
+      --help)
+        echo "Uso: $0 [--team NOMBRE_EQUIPO] [--list-teams] [--diagnose] [--help]"
+        echo ""
+        echo "Opciones:"
+        echo "  --team NOMBRE_EQUIPO    Especificar el nombre del equipo manualmente"
+        echo "  --list-teams            Listar teams disponibles en el servidor"
+        echo "  --diagnose              Ejecutar diagnóstico de conexión y autenticación"
+        echo "  --help                  Mostrar esta ayuda"
+        echo ""
+        echo "Si no se especifica --team, el agente intentará detectar automáticamente"
+        echo "el equipo desde el servidor o usará 'default' como fallback."
+        echo ""
+        echo "Ejemplos:"
+        echo "  $0 --diagnose                      # Diagnosticar problemas"
+        echo "  $0 --list-teams                    # Ver teams disponibles"
+        echo "  $0 --team mi-empresa               # Usar team específico"
+        echo "  $0                                 # Detección automática"
+        exit 0
+        ;;
+      *)
+        log 1 "Argumento desconocido: $1"
+        log 1 "Use --help para ver las opciones disponibles"
+        exit 1
+        ;;
+    esac
+  done
+}
+
 # --- Iniciar el agente ---
+# Procesar argumentos de línea de comandos
+process_command_line_args "$@"
+
 # Establecer hora de inicio para sincronización más precisa
 SYNC_START_TIME=$(date +%s)
 PING_INTERVAL=60  # Intervalo de ping en segundos

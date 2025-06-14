@@ -18,7 +18,7 @@ var builder = Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((context, services) =>
     {
-        // Registrar servicios
+        // Registrar servicios básicos
         services.AddHttpClient();
         services.AddSingleton<IBackendService, BackendService>();
         services.AddSingleton<IFileCleanupService, FileCleanupService>();
@@ -28,14 +28,23 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddHostedService<FileCleanupService>(sp => (FileCleanupService)sp.GetRequiredService<IFileCleanupService>());
         
         // Solo registrar DriverService si está habilitado en configuración
-        var enableDriver = context.Configuration.GetValue<bool>("Features:EnableDriver", true);
+        var enableDriver = context.Configuration.GetValue<bool>("Features:EnableDriver", false);
         if (enableDriver)
         {
             services.AddHostedService<DriverService>();
         }
         
+        // Siempre registrar AgentPingService (necesario para comunicación con backend)
         services.AddHostedService<AgentPingService>();
-        services.AddHostedService<InstallationMonitorService>(sp => (InstallationMonitorService)sp.GetRequiredService<IInstallationMonitorService>());
+        
+        // Solo registrar InstallationMonitorService si no está en modo pasivo
+        var passiveMode = context.Configuration.GetValue<bool>("Features:PassiveMode", false);
+        var enableInstallationMonitoring = context.Configuration.GetValue<bool>("Features:EnableInstallationMonitoring", true);
+        
+        if (!passiveMode && enableInstallationMonitoring)
+        {
+            services.AddHostedService<InstallationMonitorService>(sp => (InstallationMonitorService)sp.GetRequiredService<IInstallationMonitorService>());
+        }
         
         // DESACTIVADO: Servicio de prueba (solo para desarrollo)
         // services.AddHostedService<InstallationTestService>();
@@ -45,7 +54,20 @@ var host = builder.Build();
 
 // Log de inicio del servicio
 var logger = host.Services.GetRequiredService<ILogger<Program>>();
-logger.LogInformation("InstallGuard Service iniciando...");
+var configuration = host.Services.GetRequiredService<IConfiguration>();
+var passiveMode = configuration.GetValue<bool>("Features:PassiveMode", false);
+
+if (passiveMode)
+{
+    logger.LogInformation("InstallGuard Service iniciando en MODO PASIVO...");
+    logger.LogInformation("- Monitoreo de instalaciones: DESACTIVADO");
+    logger.LogInformation("- Ping al backend: ACTIVADO");
+    logger.LogInformation("- Inventario bajo demanda: DISPONIBLE");
+}
+else
+{
+    logger.LogInformation("InstallGuard Service iniciando en MODO ACTIVO...");
+}
 
 try
 {

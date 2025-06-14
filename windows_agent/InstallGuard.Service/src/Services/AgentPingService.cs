@@ -11,8 +11,15 @@ namespace InstallGuard.Service.Services
         private readonly ILogger<AgentPingService> _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly IInstallationMonitorService _installationMonitorService;
+        private readonly ISoftwareReportingService _softwareReportingService;
         private readonly TimeSpan _pingInterval = TimeSpan.FromMinutes(1);
         private readonly string _apiKey;
+        private readonly string _teamName;
+        private readonly bool _passiveMode;
+        private readonly bool _sendPeriodicInventory;
+        private readonly int _inventoryIntervalMinutes;
+        private DateTime _lastInventorySent = DateTime.MinValue;
 
         /// <summary>
         /// Constructor
@@ -20,24 +27,41 @@ namespace InstallGuard.Service.Services
         /// <param name="logger">Logger para registrar eventos</param>
         /// <param name="httpClientFactory">Cliente HTTP</param>
         /// <param name="configuration">Configuración de la aplicación</param>
+        /// <param name="installationMonitorService">Servicio de monitoreo de instalaciones</param>
+        /// <param name="softwareReportingService">Servicio de reporte de software</param>
         public AgentPingService(
             ILogger<AgentPingService> logger,
             IHttpClientFactory httpClientFactory,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IInstallationMonitorService installationMonitorService,
+            ISoftwareReportingService softwareReportingService)
         {
             _logger = logger;
             _configuration = configuration;
             _httpClient = httpClientFactory.CreateClient();
+            _installationMonitorService = installationMonitorService;
+            _softwareReportingService = softwareReportingService;
             
             var backendUrl = configuration["Backend:BaseUrl"] ?? "http://localhost:4002";
             _httpClient.BaseAddress = new Uri(backendUrl);
             
             _apiKey = configuration["Backend:ApiKey"] ?? "83dc386a4a636411e068f86bbe5de3bd";
+            _teamName = configuration["Backend:TeamName"] ?? "default";
+            _passiveMode = configuration.GetValue<bool>("Features:PassiveMode", false);
+            _sendPeriodicInventory = configuration.GetValue<bool>("Features:SendPeriodicInventory", false);
+            _inventoryIntervalMinutes = configuration.GetValue<int>("Features:InventoryIntervalMinutes", 15);
             
             // Configurar headers por defecto
             _httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "SoftCheck-Agent/1.0");
+            
+            _logger.LogInformation("AgentPingService configurado para team: {TeamName}", _teamName);
+            if (_passiveMode)
+            {
+                _logger.LogInformation("Modo pasivo activado - Inventario periódico: {SendInventory} cada {Minutes} minutos", 
+                    _sendPeriodicInventory ? "SÍ" : "NO", _inventoryIntervalMinutes);
+            }
         }
 
         /// <summary>
@@ -48,11 +72,27 @@ namespace InstallGuard.Service.Services
         {
             _logger.LogInformation("Servicio de ping iniciado");
 
+            // En modo pasivo, enviar inventario inicial
+            if (_passiveMode && _sendPeriodicInventory)
+            {
+                await SendInventoryAsync();
+            }
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     await SendPingAsync();
+                    
+                    // En modo pasivo, verificar si es hora de enviar inventario
+                    if (_passiveMode && _sendPeriodicInventory)
+                    {
+                        var timeSinceLastInventory = DateTime.Now - _lastInventorySent;
+                        if (timeSinceLastInventory.TotalMinutes >= _inventoryIntervalMinutes)
+                        {
+                            await SendInventoryAsync();
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -63,6 +103,35 @@ namespace InstallGuard.Service.Services
             }
 
             _logger.LogInformation("Servicio de ping detenido");
+        }
+
+        /// <summary>
+        /// Envía el inventario completo
+        /// </summary>
+        private async Task SendInventoryAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Enviando inventario completo en modo pasivo...");
+                
+                var applications = await _installationMonitorService.GetInstalledApplicationsAsync();
+                _logger.LogInformation($"Encontradas {applications.Count} aplicaciones instaladas");
+                
+                if (applications.Count > 0)
+                {
+                    var (successful, failed) = await _softwareReportingService.ReportInventoryBatchAsync(applications, 5);
+                    _logger.LogInformation($"Inventario enviado: {successful} exitosas, {failed} fallidas");
+                    _lastInventorySent = DateTime.Now;
+                }
+                else
+                {
+                    _logger.LogWarning("No se encontraron aplicaciones para enviar en el inventario");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error enviando inventario en modo pasivo");
+            }
         }
 
         /// <summary>

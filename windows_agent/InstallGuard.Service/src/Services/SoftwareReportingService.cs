@@ -17,6 +17,7 @@ namespace InstallGuard.Service.Services
         private readonly string _apiKey;
         private readonly string _baseUrl;
         private readonly string _deviceId;
+        private readonly string _teamName;
 
         public SoftwareReportingService(
             ILogger<SoftwareReportingService> logger,
@@ -28,8 +29,9 @@ namespace InstallGuard.Service.Services
             _httpClient = httpClient;
             
             // Configurar desde appsettings.json
-            _apiKey = _configuration["SoftCheck:ApiKey"] ?? "305f98c40f6ab0224759d1725147ca1b";
+            _apiKey = _configuration["SoftCheck:ApiKey"] ?? "c07f7b249e2b4b970a04f97b169db6a5";
             _baseUrl = _configuration["SoftCheck:BaseUrl"] ?? "http://localhost:4002/api";
+            _teamName = _configuration["SoftCheck:TeamName"] ?? "myteam";
             _deviceId = GetDeviceId();
 
             // Configurar HttpClient
@@ -37,6 +39,8 @@ namespace InstallGuard.Service.Services
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "InstallGuard-Agent/2.0");
             _httpClient.Timeout = TimeSpan.FromSeconds(30);
+            
+            _logger.LogInformation("SoftwareReportingService configurado para team: {TeamName}", _teamName);
         }
 
         public async Task<bool> ReportInstallationAsync(InstallationEvent installationEvent)

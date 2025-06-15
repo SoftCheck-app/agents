@@ -6,6 +6,14 @@ var builder = Host.CreateDefaultBuilder(args)
     {
         options.ServiceName = "InstallGuard Service";
     })
+    .ConfigureAppConfiguration((context, config) =>
+    {
+        // Asegurar que se carga la configuración desde el directorio del ejecutable
+        var basePath = AppContext.BaseDirectory;
+        config.SetBasePath(basePath);
+        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        config.AddEnvironmentVariables();
+    })
     .ConfigureLogging(logging =>
     {
         // Configurar logging para servicio de Windows
@@ -55,6 +63,17 @@ var host = builder.Build();
 // Log de inicio del servicio
 var logger = host.Services.GetRequiredService<ILogger<Program>>();
 var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+// Verificar que la configuración se cargó correctamente
+var apiKey = configuration["ApiSettings:ApiKey"];
+var baseUrl = configuration["ApiSettings:BaseUrl"];
+var teamName = configuration["ApiSettings:TeamName"];
+
+logger.LogInformation("Configuración cargada:");
+logger.LogInformation("- BaseUrl: {BaseUrl}", baseUrl ?? "NO CONFIGURADO");
+logger.LogInformation("- TeamName: {TeamName}", teamName ?? "NO CONFIGURADO");
+logger.LogInformation("- ApiKey: {ApiKeyStatus}", string.IsNullOrEmpty(apiKey) ? "NO CONFIGURADO" : "CONFIGURADO");
+
 var passiveMode = configuration.GetValue<bool>("Features:PassiveMode", false);
 
 if (passiveMode)

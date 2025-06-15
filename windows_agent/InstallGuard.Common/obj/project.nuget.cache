@@ -1,11 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "kgsaNzk/rcmE1JkrJj5JccJrAEEc6MhdRU1DQC1IG+PMPsy6USOzAhVL5lglgC6kUl/O7KBEInSuqeQxCCxRUg==",
+  "dgSpecHash": "heqdgp9Fy9TjgzzBcnpq09iZPsoCa2obBEo95I8DAwA/yzDrzd3d6yv5ke2nL+dKNNpKxNdlzSW4X7f8Zh46ew==",
   "success": true,
   "projectFilePath": "D:\\GAMES\\agents\\windows_agent\\InstallGuard.Common\\InstallGuard.Common.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
-    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512"
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.3\\microsoft.net.illink.tasks.8.0.3.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\8.0.3\\microsoft.netcore.app.runtime.win-x64.8.0.3.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\8.0.3\\microsoft.windowsdesktop.app.runtime.win-x64.8.0.3.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\8.0.3\\microsoft.aspnetcore.app.runtime.win-x64.8.0.3.nupkg.sha512"
   ],
   "logs": []
 }

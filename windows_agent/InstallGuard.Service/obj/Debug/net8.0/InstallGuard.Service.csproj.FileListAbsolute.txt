@@ -55,3 +55,7 @@ D:\GAMES\agents\windows_agent\InstallGuard.Service\obj\Debug\net8.0\refint\Insta
 D:\GAMES\agents\windows_agent\InstallGuard.Service\obj\Debug\net8.0\InstallGuard.Service.pdb
 D:\GAMES\agents\windows_agent\InstallGuard.Service\obj\Debug\net8.0\InstallGuard.Service.genruntimeconfig.cache
 D:\GAMES\agents\windows_agent\InstallGuard.Service\obj\Debug\net8.0\ref\InstallGuard.Service.dll
+D:\GAMES\agents\windows_agent\InstallGuard.Service\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
+D:\GAMES\agents\windows_agent\InstallGuard.Service\bin\Debug\net8.0\System.Drawing.Common.dll
+D:\GAMES\agents\windows_agent\InstallGuard.Service\bin\Debug\net8.0\System.Windows.Forms.dll
+D:\GAMES\agents\windows_agent\InstallGuard.Service\bin\Debug\net8.0\runtimes\win\lib\net8.0\Microsoft.Win32.SystemEvents.dll

@@ -1,0 +1,3 @@
+D:\GAMES\agents\windows_agent\InstallGuard.Service\publish-minimal\InstallGuard.Service.pdb
+D:\GAMES\agents\windows_agent\InstallGuard.Service\publish-minimal\InstallGuard.Common.pdb
+D:\GAMES\agents\windows_agent\InstallGuard.Service\publish-minimal\InstallGuard.Service.exe

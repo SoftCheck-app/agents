@@ -1,0 +1,123 @@
+========================================
+    INSTRUCCIONES DE INSTALACION
+    InstallGuard Agent v1.5
+========================================
+
+IMPORTANTE: Tienes 3 opciones de instalacion:
+
+========================================
+OPCION 1: INSTALACION DESDE CONSOLA
+========================================
+
+Si ya tienes una consola/PowerShell abierta como administrador:
+
+1. Navega a la carpeta donde estan los archivos
+2. Ejecuta: .\install-auto.bat
+3. El servicio se instalara automaticamente
+
+✅ VENTAJAS:
+- Funciona siempre
+- Muestra todo el proceso
+- No requiere interaccion
+
+========================================
+OPCION 2: INSTALACION CON CLICK DERECHO
+========================================
+
+Si prefieres usar el explorador de Windows:
+
+1. Haz clic DERECHO en "install-admin.bat"
+2. Selecciona "Ejecutar como administrador"
+3. Sigue las instrucciones en pantalla
+
+✅ VENTAJAS:
+- Funciona desde el explorador
+- Detecta automaticamente la ubicacion correcta
+- Maneja errores de directorio
+
+❌ NO USES: install.bat o install-auto.bat con click derecho
+   (Estos pueden fallar por problemas de directorio)
+
+========================================
+OPCION 3: VERIFICACION Y DIAGNOSTICO
+========================================
+
+Si tienes problemas o quieres verificar antes de instalar:
+
+1. Haz clic DERECHO en "diagnostico.bat"
+2. Selecciona "Ejecutar como administrador"
+3. Revisa que todos los archivos esten presentes
+4. Luego usa una de las opciones anteriores
+
+========================================
+ARCHIVOS INCLUIDOS:
+========================================
+
+✅ InstallGuard.Service.exe    - Ejecutable principal (39MB)
+✅ install-admin.bat          - Instalador para click derecho
+✅ install-auto.bat           - Instalador para consola
+✅ install.bat                - Instalador original (puede fallar)
+✅ diagnostico.bat            - Verificacion de archivos
+✅ status.bat                 - Ver estado del servicio
+✅ uninstall.bat              - Desinstalar servicio
+✅ INSTRUCCIONES_IMPORTANTES.txt - Instrucciones detalladas
+
+========================================
+CONFIGURACION DEL AGENTE:
+========================================
+
+Una vez instalado, el agente funcionara con:
+
+- Modo: PASIVO (sin interrupciones al usuario)
+- Inventario: Cada 15 minutos
+- Ping: Cada minuto
+- Backend: http://localhost:4002
+- Team: myteam
+- Inicio: Automatico con Windows
+
+========================================
+VERIFICAR INSTALACION:
+========================================
+
+Despues de instalar, verifica que funciona:
+
+1. Ejecuta: status.bat
+2. Debe mostrar: ESTADO: 4 RUNNING
+3. O usa: sc query "InstallGuard Agent"
+
+========================================
+COMANDOS UTILES:
+========================================
+
+Ver estado:     sc query "InstallGuard Agent"
+Detener:        sc stop "InstallGuard Agent"
+Iniciar:        sc start "InstallGuard Agent"
+Desinstalar:    Ejecutar uninstall.bat
+
+========================================
+SOLUCION DE PROBLEMAS:
+========================================
+
+Si install-auto.bat funciona desde consola pero install-admin.bat
+no funciona con click derecho:
+
+1. Verifica que todos los archivos esten en la misma carpeta
+2. Asegurate de que la ruta no tenga caracteres especiales
+3. Intenta copiar todos los archivos a C:\temp\ y ejecutar desde ahi
+4. Verifica que el antivirus no este bloqueando archivos
+
+========================================
+RECOMENDACION:
+========================================
+
+🟢 METODO RECOMENDADO:
+   Clic derecho en "install-admin.bat" -> "Ejecutar como administrador"
+
+🟡 METODO ALTERNATIVO:
+   Desde PowerShell como admin: .\install-auto.bat
+
+🔴 EVITAR:
+   Ejecutar directamente InstallGuard.Service.exe
+   (No es un servicio persistente)
+
+======================================== 

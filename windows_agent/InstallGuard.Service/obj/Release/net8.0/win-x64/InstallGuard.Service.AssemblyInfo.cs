@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InstallGuard.Service")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22b7a284131146f5fb52c77584c77e41f58c7230")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e22926968347ac9172e14afeca511b75a9da646")]
 [assembly: System.Reflection.AssemblyProductAttribute("InstallGuard.Service")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InstallGuard.Service")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

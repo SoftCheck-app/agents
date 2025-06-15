@@ -1,0 +1,4 @@
+D:\GAMES\agents\windows_agent\InstallGuard.Service\publish\appsettings.json
+D:\GAMES\agents\windows_agent\InstallGuard.Service\publish\InstallGuard.Service.pdb
+D:\GAMES\agents\windows_agent\InstallGuard.Service\publish\InstallGuard.Common.pdb
+D:\GAMES\agents\windows_agent\InstallGuard.Service\publish\InstallGuard.Service.exe

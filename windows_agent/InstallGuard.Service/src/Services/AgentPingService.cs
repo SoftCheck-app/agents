@@ -42,11 +42,11 @@ namespace InstallGuard.Service.Services
             _installationMonitorService = installationMonitorService;
             _softwareReportingService = softwareReportingService;
             
-            var backendUrl = configuration["Backend:BaseUrl"] ?? "http://localhost:4002";
+            var backendUrl = configuration["ApiSettings:BaseUrl"] ?? "http://localhost:4002";
             _httpClient.BaseAddress = new Uri(backendUrl);
             
-            _apiKey = configuration["Backend:ApiKey"] ?? "83dc386a4a636411e068f86bbe5de3bd";
-            _teamName = configuration["Backend:TeamName"] ?? "default";
+            _apiKey = configuration["ApiSettings:ApiKey"] ?? "83dc386a4a636411e068f86bbe5de3bd";
+            _teamName = configuration["ApiSettings:TeamName"] ?? "default";
             _passiveMode = configuration.GetValue<bool>("Features:PassiveMode", false);
             _sendPeriodicInventory = configuration.GetValue<bool>("Features:SendPeriodicInventory", false);
             _inventoryIntervalMinutes = configuration.GetValue<int>("Features:InventoryIntervalMinutes", 15);

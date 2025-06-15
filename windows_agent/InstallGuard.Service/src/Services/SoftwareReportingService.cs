@@ -3,12 +3,62 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Management;
 
 namespace InstallGuard.Service.Services
 {
+    // Clase específica para el payload de validación de software
+    public class SoftwareValidationPayload
+    {
+        [JsonPropertyName("device_id")]
+        public string DeviceId { get; set; } = string.Empty;
+        
+        [JsonPropertyName("user_id")]
+        public string UserId { get; set; } = string.Empty;
+        
+        [JsonPropertyName("software_name")]
+        public string SoftwareName { get; set; } = string.Empty;
+        
+        [JsonPropertyName("version")]
+        public string Version { get; set; } = string.Empty;
+        
+        [JsonPropertyName("vendor")]
+        public string Vendor { get; set; } = string.Empty;
+        
+        [JsonPropertyName("install_date")]
+        public string InstallDate { get; set; } = string.Empty;
+        
+        [JsonPropertyName("install_path")]
+        public string? InstallPath { get; set; }
+        
+        [JsonPropertyName("install_method")]
+        public string InstallMethod { get; set; } = string.Empty;
+        
+        [JsonPropertyName("last_executed")]
+        public string LastExecuted { get; set; } = string.Empty;
+        
+        [JsonPropertyName("is_running")]
+        public bool IsRunning { get; set; }
+        
+        [JsonPropertyName("digital_signature")]
+        public bool DigitalSignature { get; set; }
+        
+        [JsonPropertyName("is_approved")]
+        public bool IsApproved { get; set; }
+        
+        [JsonPropertyName("detected_by")]
+        public string DetectedBy { get; set; } = string.Empty;
+        
+        [JsonPropertyName("sha256")]
+        public string? Sha256 { get; set; }
+        
+        [JsonPropertyName("notes")]
+        public string? Notes { get; set; }
+    }
+
     public class SoftwareReportingService : ISoftwareReportingService
     {
         private readonly ILogger<SoftwareReportingService> _logger;
@@ -18,6 +68,14 @@ namespace InstallGuard.Service.Services
         private readonly string _baseUrl;
         private readonly string _deviceId;
         private readonly string _teamName;
+        
+        // Configuración de JsonSerializer optimizada para trimming
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
 
         public SoftwareReportingService(
             ILogger<SoftwareReportingService> logger,
@@ -28,19 +86,28 @@ namespace InstallGuard.Service.Services
             _configuration = configuration;
             _httpClient = httpClient;
             
-            // Configurar desde appsettings.json
-            _apiKey = _configuration["SoftCheck:ApiKey"] ?? "c07f7b249e2b4b970a04f97b169db6a5";
-            _baseUrl = _configuration["SoftCheck:BaseUrl"] ?? "http://localhost:4002/api";
-            _teamName = _configuration["SoftCheck:TeamName"] ?? "myteam";
+            _apiKey = _configuration["ApiSettings:ApiKey"] ?? "c07f7b249e2b4b970a04f97b169db6a5";
+            _baseUrl = _configuration["ApiSettings:BaseUrl"] ?? "http://localhost:4002";
+            _teamName = _configuration["ApiSettings:TeamName"] ?? "myteam";
             _deviceId = GetDeviceId();
 
-            // Configurar HttpClient
-            _httpClient.DefaultRequestHeaders.Add("X-API-KEY", _apiKey);
-            _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "InstallGuard-Agent/2.0");
-            _httpClient.Timeout = TimeSpan.FromSeconds(30);
+            // Log de configuración cargada
+            _logger.LogInformation("SoftwareReportingService configuración:");
+            _logger.LogInformation("- BaseUrl: {BaseUrl}", _baseUrl);
+            _logger.LogInformation("- TeamName: {TeamName}", _teamName);
+            _logger.LogInformation("- ApiKey: {ApiKeyStatus}", string.IsNullOrEmpty(_apiKey) ? "NO CONFIGURADO" : "CONFIGURADO");
             
-            _logger.LogInformation("SoftwareReportingService configurado para team: {TeamName}", _teamName);
+            // Configurar headers HTTP
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("X-API-Key", _apiKey);
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", "InstallGuard-Agent/1.0");
+            
+            if (!string.IsNullOrEmpty(_teamName))
+            {
+                _httpClient.DefaultRequestHeaders.Add("X-Team-Name", _teamName);
+            }
+            
+            _logger.LogInformation($"SoftwareReportingService inicializado. BaseUrl: {_baseUrl}, Team: {_teamName}");
         }
 
         public async Task<bool> ReportInstallationAsync(InstallationEvent installationEvent)
@@ -69,36 +136,32 @@ namespace InstallGuard.Service.Services
             {
                 _logger.LogInformation($"Enviando datos de aplicación a webapp: {applicationInfo.Name} v{applicationInfo.Version}");
 
-                // Crear el payload JSON siguiendo el formato esperado por validate_software.ts
-                var payload = new
+                // Crear el payload usando la clase específica
+                var payload = new SoftwareValidationPayload
                 {
-                    device_id = deviceId,
-                    user_id = userId,
-                    software_name = applicationInfo.Name,
-                    version = applicationInfo.Version,
-                    vendor = !string.IsNullOrEmpty(applicationInfo.Publisher) ? applicationInfo.Publisher : "Unknown",
-                    install_date = ParseInstallDate(applicationInfo.InstallDate),
-                    install_path = applicationInfo.InstallLocation,
-                    install_method = DetermineInstallMethod(applicationInfo),
-                    last_executed = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    is_running = IsApplicationRunning(applicationInfo.Name),
-                    digital_signature = !string.IsNullOrEmpty(applicationInfo.DigitalSignature),
-                    is_approved = false, // Por defecto no aprobado
-                    detected_by = "windows_agent",
-                    sha256 = !string.IsNullOrEmpty(applicationInfo.FileHash) ? applicationInfo.FileHash : CalculateApplicationHash(applicationInfo),
-                    notes = BuildNotesFromApplicationInfo(applicationInfo)
+                    DeviceId = deviceId,
+                    UserId = userId,
+                    SoftwareName = applicationInfo.Name,
+                    Version = applicationInfo.Version,
+                    Vendor = !string.IsNullOrEmpty(applicationInfo.Publisher) ? applicationInfo.Publisher : "Unknown",
+                    InstallDate = ParseInstallDate(applicationInfo.InstallDate),
+                    InstallPath = applicationInfo.InstallLocation,
+                    InstallMethod = DetermineInstallMethod(applicationInfo),
+                    LastExecuted = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    IsRunning = IsApplicationRunning(applicationInfo.Name),
+                    DigitalSignature = !string.IsNullOrEmpty(applicationInfo.DigitalSignature),
+                    IsApproved = false, // Por defecto no aprobado
+                    DetectedBy = "windows_agent",
+                    Sha256 = !string.IsNullOrEmpty(applicationInfo.FileHash) ? applicationInfo.FileHash : CalculateApplicationHash(applicationInfo),
+                    Notes = BuildNotesFromApplicationInfo(applicationInfo)
                 };
 
-                var jsonContent = JsonSerializer.Serialize(payload, new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    WriteIndented = false
-                });
+                var jsonContent = JsonSerializer.Serialize(payload, JsonOptions);
 
                 _logger.LogDebug($"Payload JSON: {jsonContent}");
 
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                var endpoint = $"{_baseUrl}/validate_software";
+                var endpoint = $"{_baseUrl}/api/validate_software";
 
                 var response = await _httpClient.PostAsync(endpoint, content);
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -142,7 +205,7 @@ namespace InstallGuard.Service.Services
             {
                 _logger.LogInformation("Probando conectividad con la webapp...");
                 
-                var endpoint = $"{_baseUrl}/health";
+                var endpoint = $"{_baseUrl}/api/health";
                 var response = await _httpClient.GetAsync(endpoint);
                 
                 if (response.IsSuccessStatusCode)

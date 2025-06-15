@@ -33,6 +33,7 @@ var builder = Host.CreateDefaultBuilder(args)
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<ISoftwareReportingService, SoftwareReportingService>();
         services.AddSingleton<IInstallationMonitorService, InstallationMonitorService>();
+        services.AddSingleton<IAutoUpdateService, AutoUpdateService>();
         services.AddHostedService<FileCleanupService>(sp => (FileCleanupService)sp.GetRequiredService<IFileCleanupService>());
         
         // Solo registrar DriverService si está habilitado en configuración
@@ -44,6 +45,13 @@ var builder = Host.CreateDefaultBuilder(args)
         
         // Siempre registrar AgentPingService (necesario para comunicación con backend)
         services.AddHostedService<AgentPingService>();
+        
+        // Registrar AutoUpdateService si está habilitado
+        var enableAutoUpdate = context.Configuration.GetValue<bool>("Features:EnableAutoUpdate", true);
+        if (enableAutoUpdate)
+        {
+            services.AddHostedService<AutoUpdateService>(sp => (AutoUpdateService)sp.GetRequiredService<IAutoUpdateService>());
+        }
         
         // Solo registrar InstallationMonitorService si no está en modo pasivo
         var passiveMode = context.Configuration.GetValue<bool>("Features:PassiveMode", false);
@@ -75,6 +83,7 @@ logger.LogInformation("- TeamName: {TeamName}", teamName ?? "NO CONFIGURADO");
 logger.LogInformation("- ApiKey: {ApiKeyStatus}", string.IsNullOrEmpty(apiKey) ? "NO CONFIGURADO" : "CONFIGURADO");
 
 var passiveMode = configuration.GetValue<bool>("Features:PassiveMode", false);
+var enableAutoUpdate = configuration.GetValue<bool>("Features:EnableAutoUpdate", true);
 
 if (passiveMode)
 {
@@ -86,6 +95,16 @@ if (passiveMode)
 else
 {
     logger.LogInformation("InstallGuard Service iniciando en MODO ACTIVO...");
+}
+
+if (enableAutoUpdate)
+{
+    logger.LogInformation("- Auto-actualización: ACTIVADO");
+    logger.LogInformation("- Verificación cada 30 minutos");
+}
+else
+{
+    logger.LogInformation("- Auto-actualización: DESACTIVADO");
 }
 
 try

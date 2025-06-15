@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo    InstallGuard Agent - Instalador
+echo    InstallGuard Agent - Instalador v1.0.5
 echo ========================================
 echo.
 
@@ -45,7 +45,7 @@ echo Copiando ejecutable...
 copy "InstallGuard.Service.exe" "%INSTALL_DIR%\" >nul
 echo OK Ejecutable copiado
 
-REM Crear configuracion
+REM Crear configuracion con auto-actualizacion
 echo Creando configuracion...
 echo {> "%INSTALL_DIR%\appsettings.json"
 echo   "Logging": {>> "%INSTALL_DIR%\appsettings.json"
@@ -72,13 +72,19 @@ echo     "EnableDriver": false,>> "%INSTALL_DIR%\appsettings.json"
 echo     "EnableInstallationMonitoring": false,>> "%INSTALL_DIR%\appsettings.json"
 echo     "PassiveMode": true,>> "%INSTALL_DIR%\appsettings.json"
 echo     "SendPeriodicInventory": true,>> "%INSTALL_DIR%\appsettings.json"
-echo     "InventoryIntervalMinutes": 15>> "%INSTALL_DIR%\appsettings.json"
+echo     "InventoryIntervalMinutes": 15,>> "%INSTALL_DIR%\appsettings.json"
+echo     "EnableAutoUpdate": true>> "%INSTALL_DIR%\appsettings.json"
 echo   },>> "%INSTALL_DIR%\appsettings.json"
 echo   "AgentSettings": {>> "%INSTALL_DIR%\appsettings.json"
 echo     "PingIntervalMinutes": 1,>> "%INSTALL_DIR%\appsettings.json"
 echo     "MonitoringIntervalSeconds": 30,>> "%INSTALL_DIR%\appsettings.json"
 echo     "BatchSize": 5,>> "%INSTALL_DIR%\appsettings.json"
 echo     "MaxRetries": 3>> "%INSTALL_DIR%\appsettings.json"
+echo   },>> "%INSTALL_DIR%\appsettings.json"
+echo   "AutoUpdate": {>> "%INSTALL_DIR%\appsettings.json"
+echo     "CheckIntervalMinutes": 30,>> "%INSTALL_DIR%\appsettings.json"
+echo     "UpdateCheckUrl": "https://agents.softcheck.app/windows-agent/latest-version",>> "%INSTALL_DIR%\appsettings.json"
+echo     "Enabled": true>> "%INSTALL_DIR%\appsettings.json"
 echo   }>> "%INSTALL_DIR%\appsettings.json"
 echo }>> "%INSTALL_DIR%\appsettings.json"
 echo OK Configuracion creada
@@ -90,7 +96,7 @@ echo OK Servicio creado
 
 REM Configurar servicio
 echo Configurando servicio...
-sc description "InstallGuard Agent" "Agente de monitoreo de software para SoftCheck - Modo Pasivo"
+sc description "InstallGuard Agent" "Agente de monitoreo de software para SoftCheck - Modo Pasivo con Auto-actualizacion"
 sc config "InstallGuard Agent" start= delayed-auto
 
 REM Iniciar servicio
@@ -108,6 +114,15 @@ echo ========================================
 echo INSTALACION COMPLETADA!
 echo ========================================
 echo.
-echo El servicio InstallGuard Agent esta ahora ejecutandose.
+echo CONFIGURACION:
+echo - Version: 1.0.5
+echo - Modo: PASIVO (sin interrupciones)
+echo - Inventario: Cada 15 minutos
+echo - Auto-actualizacion: ACTIVADA (cada 30 minutos)
+echo - Backend: http://localhost:4002
+echo - Team: myteam
+echo.
+echo El servicio InstallGuard Agent esta ahora ejecutandose
+echo y se actualizara automaticamente cuando haya nuevas versiones.
 echo.
 pause 

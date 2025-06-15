@@ -11,13 +11,14 @@ using System;
 using System.Reflection;
 
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("dotnet-InstallGuard.Service-6F97A5E8-B3F8-4E5F-B1BD-124356A64733")]
-[assembly: System.Reflection.AssemblyCompanyAttribute("InstallGuard.Service")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("SoftCheck - Intrepit")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e22926968347ac9172e14afeca511b75a9da646")]
-[assembly: System.Reflection.AssemblyProductAttribute("InstallGuard.Service")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute("Agente de monitoreo de software para SoftCheck Intrepit con auto-actualización")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.5.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.5+b66d2e3431c32da46081c9d6795ee3fe30480d32")]
+[assembly: System.Reflection.AssemblyProductAttribute("SoftCheck Agent - Intrepit")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InstallGuard.Service")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.0.5.0")]
 
 // Generado por la clase WriteCodeFragment de MSBuild.
 

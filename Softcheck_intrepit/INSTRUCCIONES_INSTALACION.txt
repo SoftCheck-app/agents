@@ -1,0 +1,160 @@
+========================================
+    INSTRUCCIONES DE INSTALACION
+    InstallGuard Agent v1.0.5
+========================================
+
+🆕 NUEVA FUNCIONALIDAD: AUTO-ACTUALIZACION AUTOMATICA
+El agente ahora se actualiza automaticamente cada 30 minutos
+verificando nuevas versiones en agents.softcheck.app
+
+IMPORTANTE: Tienes 3 opciones de instalacion:
+
+========================================
+OPCION 1: INSTALACION DESDE CONSOLA
+========================================
+
+Si ya tienes una consola/PowerShell abierta como administrador:
+
+1. Navega a la carpeta donde estan los archivos
+2. Ejecuta: .\install-simple.bat
+3. El servicio se instalara automaticamente
+
+✅ VENTAJAS:
+- Funciona siempre
+- Muestra todo el proceso
+- No requiere interaccion
+
+========================================
+OPCION 2: INSTALACION CON CLICK DERECHO
+========================================
+
+Si prefieres usar el explorador de Windows:
+
+1. Haz clic DERECHO en "install-final.bat"
+2. Selecciona "Ejecutar como administrador"
+3. Sigue las instrucciones en pantalla
+
+✅ VENTAJAS:
+- Funciona desde el explorador
+- Detecta automaticamente la ubicacion correcta
+- Maneja errores de directorio
+
+❌ NO USES: install-simple.bat con click derecho
+   (Puede fallar por problemas de directorio)
+
+========================================
+OPCION 3: VERIFICACION Y DIAGNOSTICO
+========================================
+
+Si tienes problemas o quieres verificar antes de instalar:
+
+1. Haz clic DERECHO en "diagnostico.bat"
+2. Selecciona "Ejecutar como administrador"
+3. Revisa que todos los archivos esten presentes
+4. Luego usa una de las opciones anteriores
+
+========================================
+ARCHIVOS INCLUIDOS:
+========================================
+
+✅ InstallGuard.Service.exe    - Ejecutable principal v1.0.5 (39MB)
+✅ install-final.bat           - Instalador para click derecho
+✅ install-simple.bat          - Instalador para consola
+✅ diagnostico.bat             - Verificacion de archivos
+✅ status.bat                  - Ver estado del servicio
+✅ uninstall.bat              - Desinstalar servicio
+✅ INSTRUCCIONES_INSTALACION.txt - Esta guía
+
+========================================
+CONFIGURACION DEL AGENTE v1.0.5:
+========================================
+
+Una vez instalado, el agente funcionara con:
+
+- Version: 1.0.5
+- Modo: PASIVO (sin interrupciones al usuario)
+- Inventario: Cada 15 minutos
+- Ping: Cada minuto
+- Backend: http://localhost:4002
+- Team: myteam
+- Inicio: Automatico con Windows
+- 🆕 Auto-actualizacion: ACTIVADA (cada 30 minutos)
+
+========================================
+🆕 SISTEMA DE AUTO-ACTUALIZACION:
+========================================
+
+El agente ahora incluye un sistema de auto-actualizacion que:
+
+✅ Verifica nuevas versiones cada 30 minutos
+✅ Se conecta a: agents.softcheck.app/windows-agent/latest-version
+✅ Descarga e instala automaticamente nuevas versiones
+✅ Reinicia el servicio automaticamente despues de actualizar
+✅ Mantiene toda la configuracion existente
+✅ Funciona en segundo plano sin interrumpir al usuario
+
+========================================
+VERIFICAR INSTALACION:
+========================================
+
+Despues de instalar, verifica que funciona:
+
+1. Ejecuta: status.bat
+2. Debe mostrar: ESTADO: 4 RUNNING
+3. O usa: sc query "InstallGuard Agent"
+
+Para verificar la auto-actualizacion:
+- Revisa los logs en el Visor de Eventos
+- Busca "InstallGuard Service" en Registros de aplicaciones
+
+========================================
+COMANDOS UTILES:
+========================================
+
+Ver estado:     sc query "InstallGuard Agent"
+Detener:        sc stop "InstallGuard Agent"
+Iniciar:        sc start "InstallGuard Agent"
+Desinstalar:    Ejecutar uninstall.bat
+
+========================================
+SOLUCION DE PROBLEMAS:
+========================================
+
+Si install-simple.bat funciona desde consola pero install-final.bat
+no funciona con click derecho:
+
+1. Verifica que todos los archivos esten en la misma carpeta
+2. Asegurate de que la ruta no tenga caracteres especiales
+3. Intenta copiar todos los archivos a C:\temp\ y ejecutar desde ahi
+4. Verifica que el antivirus no este bloqueando archivos
+
+Si la auto-actualizacion no funciona:
+1. Verifica conexion a internet
+2. Revisa que agents.softcheck.app sea accesible
+3. Consulta logs en Visor de Eventos
+
+========================================
+RECOMENDACION:
+========================================
+
+🟢 METODO RECOMENDADO:
+   Clic derecho en "install-final.bat" -> "Ejecutar como administrador"
+
+🟡 METODO ALTERNATIVO:
+   Desde PowerShell como admin: .\install-simple.bat
+
+🔴 EVITAR:
+   Ejecutar directamente InstallGuard.Service.exe
+   (No es un servicio persistente)
+
+========================================
+NOVEDADES v1.0.5:
+========================================
+
+🆕 Sistema de auto-actualizacion automatica
+🆕 Verificacion de versiones cada 30 minutos
+🆕 Descarga e instalacion automatica de actualizaciones
+🆕 Mantenimiento automatico de configuracion
+🆕 Logs mejorados para seguimiento de actualizaciones
+
+======================================== 

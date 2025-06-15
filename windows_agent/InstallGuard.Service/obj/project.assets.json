@@ -6089,7 +6089,7 @@
     "C:\\Users\\rbrtm\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "1.0.5",
     "restore": {
       "projectUniqueName": "D:\\GAMES\\agents\\windows_agent\\InstallGuard.Service\\InstallGuard.Service.csproj",
       "projectName": "InstallGuard.Service",

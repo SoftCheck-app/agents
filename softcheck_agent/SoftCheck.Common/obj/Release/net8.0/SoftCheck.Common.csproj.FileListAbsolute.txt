@@ -1,0 +1,13 @@
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\SoftCheck.Common.GeneratedMSBuildEditorConfig.editorconfig
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\SoftCheck.Common.AssemblyInfoInputs.cache
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\SoftCheck.Common.AssemblyInfo.cs
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\SoftCheck.Common.csproj.CoreCompileInputs.cache
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\SoftCheck.Common.sourcelink.json
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\bin\Release\net8.0\SoftCheck.Common.deps.json
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\bin\Release\net8.0\SoftCheck.Common.dll
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\bin\Release\net8.0\SoftCheck.Common.pdb
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\SoftCheck.Common.csproj.AssemblyReference.cache
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\SoftCheck.Common.dll
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\refint\SoftCheck.Common.dll
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\SoftCheck.Common.pdb
+D:\GAMES\agents\softcheck_agent\SoftCheck.Common\obj\Release\net8.0\ref\SoftCheck.Common.dll

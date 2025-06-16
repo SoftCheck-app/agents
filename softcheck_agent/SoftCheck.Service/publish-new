@@ -1,0 +1,107 @@
+========================================
+    ¡IMPORTANTE! - CÓMO EJECUTAR CORRECTAMENTE
+========================================
+
+❌ MÉTODO INCORRECTO (lo que NO debes hacer):
+- Hacer doble clic en "InstallGuard.Service.exe"
+- Se abre una ventana CMD
+- Al cerrar la ventana, el agente se cierra
+- NO es persistente
+- NO se inicia automáticamente
+
+✅ MÉTODO CORRECTO (lo que SÍ debes hacer):
+- Hacer clic derecho en "install.bat"
+- Seleccionar "Ejecutar como administrador"
+- El agente se instala como SERVICIO DE WINDOWS
+- Funciona en segundo plano (sin ventanas)
+- Es persistente (no se cierra al cerrar ventanas)
+- Se inicia automáticamente con Windows
+
+========================================
+DIFERENCIAS IMPORTANTES:
+========================================
+
+EJECUTAR DIRECTAMENTE EL .EXE:
+❌ Aplicación de consola temporal
+❌ Se cierra al cerrar la ventana
+❌ NO es un servicio
+❌ NO se inicia automáticamente
+❌ Requiere mantener la ventana abierta
+
+INSTALAR COMO SERVICIO:
+✅ Servicio de Windows real
+✅ Funciona en segundo plano
+✅ Persistente (no se cierra)
+✅ Se inicia automáticamente con Windows
+✅ No requiere ventanas abiertas
+✅ Se puede controlar desde Servicios de Windows
+
+========================================
+PASOS CORRECTOS PARA INSTALACIÓN:
+========================================
+
+1. Extraer todos los archivos del ZIP
+2. Hacer clic DERECHO en "install.bat"
+3. Seleccionar "Ejecutar como administrador"
+4. Esperar a que termine la instalación
+5. ¡Listo! El servicio funcionará automáticamente
+
+========================================
+VERIFICAR QUE FUNCIONA CORRECTAMENTE:
+========================================
+
+Método 1 - Script de estado:
+- Ejecutar "status.bat" como administrador
+- Debe mostrar: ESTADO: 4 RUNNING
+
+Método 2 - Servicios de Windows:
+- Abrir "services.msc"
+- Buscar "InstallGuard Agent"
+- Estado debe ser: "En ejecución"
+
+Método 3 - Línea de comandos:
+- Abrir CMD como administrador
+- Ejecutar: sc query "InstallGuard Agent"
+- Debe mostrar: ESTADO: 4 RUNNING
+
+========================================
+COMANDOS ÚTILES:
+========================================
+
+Ver estado:
+sc query "InstallGuard Agent"
+
+Detener servicio:
+sc stop "InstallGuard Agent"
+
+Iniciar servicio:
+sc start "InstallGuard Agent"
+
+Desinstalar completamente:
+- Ejecutar "uninstall.bat" como administrador
+
+========================================
+SOLUCIÓN DE PROBLEMAS:
+========================================
+
+Si ejecutaste el .exe directamente y se cerró:
+1. Eso es normal - no es la forma correcta
+2. Usa el método correcto: install.bat
+3. El servicio funcionará correctamente
+
+Si el servicio no se instala:
+1. Verificar permisos de administrador
+2. Verificar que todos los archivos estén presentes
+3. Revisar logs en el Visor de Eventos
+
+========================================
+RECUERDA:
+========================================
+
+🔴 NUNCA ejecutes directamente InstallGuard.Service.exe
+🟢 SIEMPRE usa install.bat para instalación correcta
+
+El agente DEBE funcionar como servicio de Windows
+para ser persistente y automático.
+
+======================================== 

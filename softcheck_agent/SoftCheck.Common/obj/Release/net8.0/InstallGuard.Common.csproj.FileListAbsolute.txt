@@ -1,0 +1,13 @@
+D:\GAMES\agents\windows_agent\InstallGuard.Common\bin\Release\net8.0\InstallGuard.Common.deps.json
+D:\GAMES\agents\windows_agent\InstallGuard.Common\bin\Release\net8.0\InstallGuard.Common.dll
+D:\GAMES\agents\windows_agent\InstallGuard.Common\bin\Release\net8.0\InstallGuard.Common.pdb
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\InstallGuard.Common.csproj.AssemblyReference.cache
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\InstallGuard.Common.GeneratedMSBuildEditorConfig.editorconfig
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\InstallGuard.Common.AssemblyInfoInputs.cache
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\InstallGuard.Common.AssemblyInfo.cs
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\InstallGuard.Common.csproj.CoreCompileInputs.cache
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\InstallGuard.Common.sourcelink.json
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\InstallGuard.Common.dll
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\refint\InstallGuard.Common.dll
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\InstallGuard.Common.pdb
+D:\GAMES\agents\windows_agent\InstallGuard.Common\obj\Release\net8.0\ref\InstallGuard.Common.dll

@@ -1,0 +1,3 @@
+D:\GAMES\agents\InstallGuard-Ready\InstallGuard.Service.pdb
+D:\GAMES\agents\InstallGuard-Ready\InstallGuard.Common.pdb
+D:\GAMES\agents\InstallGuard-Ready\InstallGuard.Service.exe

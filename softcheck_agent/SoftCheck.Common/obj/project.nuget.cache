@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "4nATNp2n9zhcfCLJkaaG6L92Qk3Q7feKghNDl9nV1EAQbRSI0c6BiHivEuDmL3G9WA25X67eoKqhWbCBXTDgYQ==",
+  "success": true,
+  "projectFilePath": "D:\\GAMES\\agents\\softcheck_agent\\SoftCheck.Common\\SoftCheck.Common.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.3\\microsoft.net.illink.tasks.8.0.3.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\8.0.3\\microsoft.netcore.app.runtime.win-x64.8.0.3.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\8.0.3\\microsoft.windowsdesktop.app.runtime.win-x64.8.0.3.nupkg.sha512",
+    "C:\\Users\\rbrtm\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\8.0.3\\microsoft.aspnetcore.app.runtime.win-x64.8.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

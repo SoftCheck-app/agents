@@ -1,0 +1,5 @@
+D:\GAMES\agents\softcheck_agent\SoftCheck.Service\publish\appsettings.json
+D:\GAMES\agents\softcheck_agent\SoftCheck.Service\publish\publish\appsettings.json
+D:\GAMES\agents\softcheck_agent\SoftCheck.Service\publish\SoftCheck.Service.pdb
+D:\GAMES\agents\softcheck_agent\SoftCheck.Service\publish\SoftCheck.Common.pdb
+D:\GAMES\agents\softcheck_agent\SoftCheck.Service\publish\SoftCheck.Service.exe

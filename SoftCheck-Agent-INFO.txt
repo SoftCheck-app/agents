@@ -1,0 +1,54 @@
+========================================
+    SOFTCHECK AGENT - INFORMACIÓN
+========================================
+
+PROYECTO CREADO: SoftCheck Agent para Intrepit
+FECHA: Junio 2025
+VERSIÓN: 1.0
+
+CONFIGURACIÓN:
+- Team ID: intrepit
+- API Key: 89888ecba1b4a5a26716e80a396fd5db
+- URL Backend: https://intrepit.softcheck.app
+- Modo: Pasivo (inventario cada 15 minutos)
+
+ARCHIVOS GENERADOS:
+1. SoftCheck-Agent-Intrepit-v1.0.zip (30.5 MB)
+   - Contiene todos los archivos necesarios para distribución
+
+CONTENIDO DEL ZIP:
+- SoftCheck.Service.exe (70.5 MB) - Ejecutable principal
+- appsettings.json - Configuración del agente
+- install-softcheck.bat - Script de instalación
+- uninstall-softcheck.bat - Script de desinstalación
+- status-softcheck.bat - Verificador de estado
+- README-SoftCheck.txt - Documentación
+
+CARACTERÍSTICAS:
+✓ Compilado como ejecutable único (self-contained)
+✓ Configurado para Windows x64
+✓ Modo pasivo por defecto
+✓ Envío de inventario cada 15 minutos
+✓ Comunicación HTTPS segura
+✓ Servicio de Windows nativo
+✓ Logs en Event Viewer
+
+INSTALACIÓN:
+1. Extraer el archivo ZIP
+2. Ejecutar como administrador: install-softcheck.bat
+3. El servicio se instalará y iniciará automáticamente
+
+UBICACIÓN DEL PROYECTO:
+- Código fuente: agents/softcheck_agent/
+- Distribución: SoftCheck-Agent-Intrepit-v1.0.zip
+
+DIFERENCIAS CON INSTALLGUARD:
+- Nombre del servicio: "SoftCheck Agent"
+- Namespace: SoftCheck.* (en lugar de InstallGuard.*)
+- Configuración específica para intrepit
+- Scripts de instalación personalizados
+- Documentación actualizada
+
+========================================
+LISTO PARA DISTRIBUCIÓN
+======================================== 

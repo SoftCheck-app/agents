@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo    SoftCheck Agent - Intrepit v1.0.5
+echo    InstallGuard Agent - Instalador v1.0.5
 echo ========================================
 echo.
 
@@ -39,23 +39,23 @@ echo OK InstallGuard.Service.exe encontrado
 for %%I in ("%~dp0InstallGuard.Service.exe") do echo   Tamano: %%~zI bytes
 echo.
 
-echo Instalando SoftCheck Agent - Intrepit como servicio de Windows...
+echo Instalando InstallGuard Agent como servicio de Windows...
 echo.
 
 REM Detener y eliminar servicio existente si existe
 echo Verificando instalacion previa...
-sc query "SoftCheck Agent - Intrepit" >nul 2>&1
+sc query "InstallGuard Agent" >nul 2>&1
 if %errorLevel% equ 0 (
     echo Deteniendo servicio existente...
-    sc stop "SoftCheck Agent - Intrepit" >nul 2>&1
+    sc stop "InstallGuard Agent" >nul 2>&1
     timeout /t 5 /nobreak >nul
     echo Eliminando servicio existente...
-    sc delete "SoftCheck Agent - Intrepit" >nul 2>&1
+    sc delete "InstallGuard Agent" >nul 2>&1
     timeout /t 3 /nobreak >nul
 )
 
 REM Crear directorio de instalacion
-set INSTALL_DIR=C:\Program Files\SoftCheck_Intrepit
+set INSTALL_DIR=C:\Program Files\InstallGuard
 echo Creando directorio: %INSTALL_DIR%
 if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
 
@@ -73,7 +73,7 @@ REM Copiar archivos adicionales si existen
 if exist "%~dp0InstallGuard.Service.pdb" copy "%~dp0InstallGuard.Service.pdb" "%INSTALL_DIR%\" >nul
 if exist "%~dp0InstallGuard.Common.pdb" copy "%~dp0InstallGuard.Common.pdb" "%INSTALL_DIR%\" >nul
 
-REM Crear archivo de configuracion con auto-actualizacion para Intrepit
+REM Crear archivo de configuracion con auto-actualizacion
 echo Creando configuracion...
 (
 echo {
@@ -84,17 +84,17 @@ echo       "Microsoft.Hosting.Lifetime": "Information"
 echo     }
 echo   },
 echo   "Backend": {
-echo     "BaseUrl": "https://intrepit.softcheck.app",
-echo     "ApiKey": "89888ecba1b4a5a26716e80a396fd5db"
+echo     "BaseUrl": "http://localhost:4002",
+echo     "ApiKey": "83dc386a4a636411e068f86bbe5de3bd"
 echo   },
 echo   "SoftCheck": {
-echo     "BaseUrl": "https://intrepit.softcheck.app/api",
-echo     "ApiKey": "89888ecba1b4a5a26716e80a396fd5db"
+echo     "BaseUrl": "http://localhost:4002/api",
+echo     "ApiKey": "83dc386a4a636411e068f86bbe5de3bd"
 echo   },
 echo   "ApiSettings": {
-echo     "BaseUrl": "https://intrepit.softcheck.app",
-echo     "ApiKey": "89888ecba1b4a5a26716e80a396fd5db",
-echo     "TeamName": "intrepit"
+echo     "BaseUrl": "http://localhost:4002",
+echo     "ApiKey": "83dc386a4a636411e068f86bbe5de3bd",
+echo     "TeamName": "myteam"
 echo   },
 echo   "Features": {
 echo     "EnableDriver": false,
@@ -127,7 +127,7 @@ echo OK Configuracion creada
 
 REM Instalar como servicio
 echo Instalando servicio...
-sc create "SoftCheck Agent - Intrepit" binPath= "\"%INSTALL_DIR%\InstallGuard.Service.exe\"" start= auto DisplayName= "SoftCheck Agent - Intrepit" type= own >nul
+sc create "InstallGuard Agent" binPath= "\"%INSTALL_DIR%\InstallGuard.Service.exe\"" start= auto DisplayName= "InstallGuard Agent" type= own >nul
 
 if %errorLevel% neq 0 (
     echo ERROR: No se pudo crear el servicio
@@ -138,22 +138,22 @@ echo OK Servicio creado
 
 REM Configurar servicio
 echo Configurando servicio...
-sc description "SoftCheck Agent - Intrepit" "Agente de monitoreo de software para SoftCheck Intrepit - Modo Pasivo con Auto-actualizacion" >nul
-sc failure "SoftCheck Agent - Intrepit" reset= 86400 actions= restart/30000/restart/60000/restart/120000 >nul
-sc config "SoftCheck Agent - Intrepit" start= delayed-auto >nul
+sc description "InstallGuard Agent" "Agente de monitoreo de software para SoftCheck - Modo Pasivo con Auto-actualizacion" >nul
+sc failure "InstallGuard Agent" reset= 86400 actions= restart/30000/restart/60000/restart/120000 >nul
+sc config "InstallGuard Agent" start= delayed-auto >nul
 
 REM Iniciar servicio
 echo Iniciando servicio...
-sc start "SoftCheck Agent - Intrepit" >nul
+sc start "InstallGuard Agent" >nul
 
 REM Verificar que el servicio se inicio correctamente
 timeout /t 5 /nobreak >nul
-sc query "SoftCheck Agent - Intrepit" | find "RUNNING" >nul
+sc query "InstallGuard Agent" | find "RUNNING" >nul
 if %errorLevel% equ 0 (
     echo OK Servicio iniciado correctamente
 ) else (
     echo ADVERTENCIA: Verificando estado del servicio...
-    sc query "SoftCheck Agent - Intrepit"
+    sc query "InstallGuard Agent"
 )
 
 echo.
@@ -161,22 +161,21 @@ echo ========================================
 echo INSTALACION COMPLETADA EXITOSAMENTE!
 echo ========================================
 echo.
-echo CONFIGURACION INTREPIT:
+echo CONFIGURACION:
 echo - Version: 1.0.5
-echo - Cliente: Intrepit
 echo - Modo: PASIVO (sin interrupciones)
 echo - Inventario: Cada 15 minutos
 echo - Auto-actualizacion: ACTIVADA (cada 30 minutos)
-echo - Backend: https://intrepit.softcheck.app
-echo - Team: intrepit
+echo - Backend: http://localhost:4002
+echo - Team: myteam
 echo - Inicio: Automatico con Windows
 echo.
 echo COMANDOS UTILES:
-echo - Ver estado: sc query "SoftCheck Agent - Intrepit"
-echo - Detener: sc stop "SoftCheck Agent - Intrepit"
-echo - Iniciar: sc start "SoftCheck Agent - Intrepit"
+echo - Ver estado: sc query "InstallGuard Agent"
+echo - Detener: sc stop "InstallGuard Agent"
+echo - Iniciar: sc start "InstallGuard Agent"
 echo.
-echo El servicio SoftCheck Agent - Intrepit esta ahora ejecutandose
+echo El servicio InstallGuard Agent esta ahora ejecutandose
 echo en segundo plano y se iniciara automaticamente con Windows.
 echo.
 echo NUEVA FUNCIONALIDAD:

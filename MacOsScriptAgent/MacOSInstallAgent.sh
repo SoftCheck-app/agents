@@ -14,7 +14,7 @@
 # Variables de configuración
 #BACKEND_URL="http://34.175.247.105:4002/api"
 BACKEND_URL="http://localhost:4002/api"
-API_KEY="8614b11fc82969369d0980fa37f03381"  # Debe coincidir con el valor en la base de datos
+API_KEY="387a3cb4b8ff8085870824263cf07cf8"  # Debe coincidir con el valor en la base de datos
 # TEAM_NAME se resuelve automáticamente en el servidor usando la API key
 APPS_DIRECTORY="/Applications"
 SCAN_INTERVAL=1  # segundos entre escaneos - verificar aplicaciones pendientes cada 10 segundos
